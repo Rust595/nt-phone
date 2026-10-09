@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>NT PHONE | نوميديا تليفون - الهواتف وملحقاتها في الجزائر</title>
+    <meta name="description" content="متجر NT PHONE (نوميديا تليفون) الرسمي - أحدث الهواتف الذكية الأصلية، ملحقاتها، وخدمات الصيانة والضمان في الجزائر بالدينار الجزائري.">
+    
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="NT PHONE | NUMIDIA TELEPHONE">
+    <meta property="og:description" content="وجهتكم الأولى لأحدث الهواتف والإلكترونيات الأصلية في الجزائر.">
+    <meta name="theme-color" content="#0B1325">
+
+    <!-- Fonts: Cairo (Arabic & Latin typography) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- External Client Libraries (Production CDNs) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+
+    <style>
+        /* -------------------------------------------------------------
+           1. CSS VARIABLES & SYSTEM ARCHITECTURE
+           ------------------------------------------------------------- */
+        :root {
+            --bg-base: #0B1325;
+            --bg-surface: #111C35;
+            --bg-surface-elevated: #162444;
+            --bg-card: #18284C;
+            --bg-card-hover: #1E315D;
+            --bg-glass: rgba(17, 28, 53, 0.85);
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-accent: rgba(56, 189, 248, 0.25);
+            --border-focus: #38BDF8;
+
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --text-inverse: #0B1325;
+
+            --brand-blue: #0284C7;
+            --brand-blue-hover: #0369A1;
+            --brand-accent: #38BDF8;
+            --brand-glow: rgba(56, 189, 248, 0.15);
+
+            --state-success: #10B981;
+            --state-warning: #F59E0B;
+            --state-danger: #EF4444;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 14px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+            --shadow-3d: 0 12px 30px -10px rgba(2, 132, 199, 0.25);
+
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+            --font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+            --container-max: 1280px;
+        }
+
+        /* -------------------------------------------------------------
+           2. RESET & BASE STYLES
+           ------------------------------------------------------------- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button, input, select, textarea {
+            font-family: inherit;
+            color: inherit;
+            border: none;
+            outline: none;
+            background: none;
+        }
+
+        button {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            user-select: none;
+        }
+
+        /* -------------------------------------------------------------
+           3. UTILITIES & ACCESSIBILITY
+           ------------------------------------------------------------- */
+        .container {
+            width: 100%;
+            max-width: var(--container-max);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .badge-brand { background: var(--brand-glow); color: var(--brand-accent); border: 1px solid var(--border-accent); }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--state-success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--state-warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--state-danger); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--brand-blue);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        }
+        .btn-primary:hover {
+            background-color: var(--brand-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-surface-elevated);
+            color: var(--text-primary);
+            border-color: var(--border-subtle);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-accent);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--state-danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover {
+            background: var(--state-danger);
+            color: #FFFFFF;
+        }
+
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.825rem; }
+        .btn-icon { padding: 0.5rem; border-radius: var(--radius-md); }
+
+        /* -------------------------------------------------------------
+           4. INTRO / WELCOME SCREEN
+           ------------------------------------------------------------- */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #111C35 0%, #0B1325 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: opacity var(--transition-slow), visibility var(--transition-slow);
+        }
+
+        #intro-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .intro-modal {
+            max-width: 480px;
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg), var(--shadow-3d);
+        }
+
+        .intro-logo-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #0284C7, #0B1325);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--brand-accent);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+        }
+
+        .intro-logo-box span {
+            font-size: 1.75rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #FFFFFF;
+        }
+
+        /* -------------------------------------------------------------
+           5. HEADER & NAVIGATION
+           ------------------------------------------------------------- */
+        header.site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            gap: 1rem;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--brand-blue), var(--bg-surface));
+            border: 1px solid var(--brand-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #FFFFFF;
+            flex-shrink: 0;
+        }
+
+        .brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #FFFFFF;
+        }
+
+        .brand-text span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--brand-accent);
+            letter-spacing: 0.5px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 440px;
+            position: relative;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .search-container { display: block; }
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            padding: 0.55rem 2.5rem 0.55rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+        }
+
+        .search-input:focus {
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 3px var(--brand-glow);
+        }
+
+        .search-icon-pos {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-btn-indicator {
+            position: relative;
+        }
+
+        .cart-counter {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            background: var(--brand-accent);
+            color: var(--bg-base);
+            font-size: 0.7rem;
+            font-weight: 900;
+            width: 18px;
+            height: 18px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* -------------------------------------------------------------
+           6. HERO SECTION
+           ------------------------------------------------------------- */
+        .hero-section {
+            padding: 1.5rem 0;
+            position: relative;
+        }
+
+        .hero-slider-wrap {
+            position: relative;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            min-height: 280px;
+        }
+
+        @media (min-width: 768px) {
+            .hero-slider-wrap { min-height: 400px; }
+        }
+
+        .hero-slide {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            padding: 2.5rem 1.5rem;
+            background-size: cover;
+            background-position: center;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero-slide { min-height: 400px; padding: 3rem; }
+        }
+
+        .hero-slide.active {
+            display: flex;
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(11, 19, 37, 0.95) 0%, rgba(11, 19, 37, 0.7) 60%, rgba(11, 19, 37, 0.3) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 580px;
+        }
+
+        .hero-content h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+            color: #FFFFFF;
+        }
+
+        @media (min-width: 768px) {
+            .hero-content h2 { font-size: 2.5rem; }
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            background: rgba(17, 28, 53, 0.75);
+            border: 1px solid var(--border-subtle);
+            color: #FFFFFF;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-nav-prev { right: 1rem; }
+        .hero-nav-next { left: 1rem; }
+
+        /* -------------------------------------------------------------
+           7. CATEGORY CHIPS / BAR
+           ------------------------------------------------------------- */
+        .category-bar-section {
+            padding: 0.5rem 0 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .category-bar-section::-webkit-scrollbar { display: none; }
+
+        .category-chips-list {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .cat-chip {
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-full);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        .cat-chip:hover, .cat-chip.active {
+            background: var(--brand-blue);
+            color: #FFFFFF;
+            border-color: var(--brand-accent);
+        }
+
+        /* -------------------------------------------------------------
+           8. PRODUCT CATALOG & 3D CARDS
+           ------------------------------------------------------------- */
+        .catalog-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-select {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            perspective: 1000px; /* Base for 3D depth */
+        }
+
+        @media (min-width: 640px) {
+            .products-grid { gap: 1rem; }
+        }
+
+        @media (min-width: 768px) {
+            .products-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        }
+
+        .product-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+            will-change: transform;
+        }
+
+        /* Responsive 3D depth hover (desktop only) */
+        @media (hover: hover) and (min-width: 1024px) {
+            .product-card:hover {
+                transform: translateY(-6px) rotateX(2deg) rotateY(-1deg);
+                box-shadow: var(--shadow-3d), 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+                border-color: var(--border-accent);
+            }
+        }
+
+        .card-img-wrap {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* 1:1 Aspect ratio */
+            background: #080D1A;
+            overflow: hidden;
+        }
+
+        .card-img-wrap img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 0.75rem;
+            transition: transform var(--transition-normal);
+        }
+
+        .product-card:hover .card-img-wrap img {
+            transform: scale(1.04);
+        }
+
+        .card-badges {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            z-index: 2;
+        }
+
+        .card-details {
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .card-brand {
+            font-size: 0.75rem;
+            color: var(--brand-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0.2rem 0 0.5rem;
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.8em;
+            line-height: 1.4;
+        }
+
+        .card-pricing {
+            margin: 0.4rem 0 0.8rem;
+        }
+
+        .current-price {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .old-price {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-right: 0.5rem;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+        }
+
+        /* -------------------------------------------------------------
+           9. PRODUCT DETAIL MODAL / VIEW (PERSISTENT & DEEP-LINKED)
+           ------------------------------------------------------------- */
+        .modal-base {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(11, 19, 37, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .modal-base.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 10;
+            background: var(--bg-surface-elevated);
+            color: var(--text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .product-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .product-modal-grid {
+                grid-template-columns: 1fr 1fr;
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        .gallery-main-view {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            background: #080D1A;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+
+        .gallery-main-view img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+        }
+
+        .gallery-thumbs-strip {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+        }
+
+        .gallery-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: #080D1A;
+            cursor: pointer;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .gallery-thumb.active {
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 2px var(--brand-glow);
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .spec-table tr {
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .spec-table td {
+            padding: 0.5rem 0;
+        }
+
+        .spec-table td:first-child {
+            color: var(--text-muted);
+            width: 40%;
+        }
+
+        /* -------------------------------------------------------------
+           10. CART & CHECKOUT DRAWER
+           ------------------------------------------------------------- */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 19, 37, 0.75);
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-surface);
+            z-index: 1051;
+            transform: translateX(-100%);
+            transition: transform var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-accent);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .drawer-overlay.active .drawer-panel {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+        }
+
+        .drawer-footer {
+            padding: 1.25rem;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface-elevated);
+        }
+
+        .cart-item-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            align-items: center;
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            background: #080D1A;
+            object-fit: contain;
+            padding: 0.25rem;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-top: 0.4rem;
+        }
+
+        .qty-btn {
+            padding: 0.2rem 0.5rem;
+            background: var(--bg-surface-elevated);
+            color: var(--text-primary);
+        }
+
+        .qty-val {
+            padding: 0.2rem 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 0.85rem;
+            font-size: 0.9rem;
+            color: #FFFFFF;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-control:focus {
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 2px var(--brand-glow);
+        }
+
+        /* -------------------------------------------------------------
+           11. REAL ADMIN DASHBOARD STYLES
+           ------------------------------------------------------------- */
+        #admin-panel {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        #admin-panel.active {
+            display: block;
+        }
+
+        .admin-nav {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .admin-tab-bar {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.25rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .admin-tab.active {
+            color: var(--brand-accent);
+            border-bottom-color: var(--brand-accent);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .stat-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .stat-card h3 { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .stat-card p { font-size: 1.75rem; font-weight: 800; color: #FFFFFF; margin-top: 0.25rem; }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: var(--bg-surface);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: var(--bg-surface-elevated);
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .data-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+
+        /* Upload previews */
+        .upload-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .upload-preview-item {
+            width: 100%;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .upload-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-preview-del {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: rgba(239, 68, 68, 0.85);
+            color: #fff;
+            border-radius: var(--radius-full);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* -------------------------------------------------------------
+           12. TOAST SYSTEM
+           ------------------------------------------------------------- */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            left: 1.5rem;
+            z-index: 99999;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        @media (min-width: 640px) {
+            #toast-container { left: auto; max-width: 380px; }
+        }
+
+        .toast-msg {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-accent);
+            color: #FFFFFF;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            pointer-events: auto;
+            animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast-msg.danger { border-color: var(--state-danger); }
+        .toast-msg.success { border-color: var(--state-success); }
+
+        @keyframes toastIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* -------------------------------------------------------------
+           13. FLOATING CONTACT ACTIONS & FOOTER
+           ------------------------------------------------------------- */
+        .fab-contact {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .fab-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            color: #FFFFFF;
+        }
+
+        .fab-whatsapp { background: #25D366; }
+        .fab-phone { background: var(--brand-blue); }
+
+        footer.site-footer {
+            margin-top: auto;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. INTRO / WELCOME SCREEN -->
+    <div id="intro-overlay">
+        <div class="intro-modal">
+            <div class="intro-logo-box">
+                <span>NT</span>
+            </div>
+            <h2 id="intro-title" style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">NT PHONE</h2>
+            <p id="intro-subtitle" style="color: var(--brand-accent); font-weight: 600; font-size: 0.85rem; margin-bottom: 1rem;">NUMIDIA TELEPHONE</p>
+            <p id="intro-msg" style="color: var(--text-secondary); margin-bottom: 1.75rem; font-size: 0.95rem; line-height: 1.6;">
+                وجهتكم الأولى لأحدث الهواتف الذكية والإلكترونيات الأصلية في الجزائر.
+            </p>
+            <button class="btn btn-primary" style="width: 100%;" onclick="App.dismissIntro(true)">
+                <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
+                <span>دخول المتجر</span>
+            </button>
+            <div style="margin-top: 1rem;">
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="checkbox" id="skip-intro-check"> عدم الإظهار مرة أخرى
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SITE HEADER -->
+    <header class="site-header">
+        <div class="container nav-wrapper">
+            <a href="#" class="brand-link" onclick="App.navigate('catalog'); return false;">
+                <div class="brand-logo-badge">NT</div>
+                <div class="brand-text">
+                    <h1 id="header-store-name">NT PHONE</h1>
+                    <span id="header-store-sub">NUMIDIA TELEPHONE</span>
+                </div>
+            </a>
+
+            <!-- Search Bar (Live Filtering) -->
+            <div class="search-container">
+                <input type="text" class="search-input" id="global-search" placeholder="ابحث عن هاتف، علامة تجارية أو ملحق..." oninput="App.handleSearch(this.value)">
+                <i data-lucide="search" class="search-icon-pos" style="width: 18px; height: 18px;"></i>
+            </div>
+
+            <!-- Actions: Cart, Setup / Admin Entry -->
+            <div class="nav-actions">
+                <button class="btn btn-secondary btn-icon" title="لوحة التحكم" onclick="App.openAdminAuthModal()">
+                    <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+                    <span class="sr-only">الإدارة</span>
+                </button>
+
+                <button class="btn btn-primary btn-icon cart-btn-indicator" title="سلة الطلبات" onclick="App.openCart()">
+                    <i data-lucide="shopping-cart" style="width: 20px; height: 20px;"></i>
+                    <span class="cart-counter" id="cart-count">0</span>
+                    <span class="sr-only">السلة</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. MAIN STOREFRONT CONTENT -->
+    <main id="main-content" style="flex-grow: 1;">
+        <div class="container">
+            
+            <!-- A. Dynamic Hero Carousel -->
+            <section class="hero-section" id="hero-area">
+                <div class="hero-slider-wrap" id="hero-slider-wrap">
+                    <!-- Slide injection point -->
+                    <div class="hero-slide active">
+                        <div class="hero-backdrop"></div>
+                        <div class="hero-content">
+                            <span class="badge badge-brand" style="margin-bottom: 0.5rem;">عروض وتخفيضات أسبوعية</span>
+                            <h2>أحدث الهواتف الذكية مع ضمان رسمي</h2>
+                            <p>نوفر لكم أفضل العلامات التجارية العالمية مع خدمات التوصيل السريع لكافة الولايات الجزائرية.</p>
+                            <a href="#catalog" class="btn btn-primary">تصفح الهواتف المتوفرة</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- B. Categories Bar -->
+            <section class="category-bar-section">
+                <div class="category-chips-list" id="category-chips">
+                    <button class="cat-chip active" data-cat="all" onclick="App.filterCategory('all', this)">كل المنتجات</button>
+                    <!-- Dynamically populated categories -->
+                </div>
+            </section>
+
+            <!-- C. Catalog Controls & Sort -->
+            <section class="catalog-controls" id="catalog">
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF;">قائمة المنتجات المتاحة</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);" id="catalog-count-label">جاري التحميل...</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <select class="filter-select" id="sort-select" onchange="App.handleSort(this.value)">
+                        <option value="newest">الأحدث وصولاً</option>
+                        <option value="price_asc">السعر: من الأقل للأعلى</option>
+                        <option value="price_desc">السعر: من الأعلى للأقل</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- D. Product Grid (Subtle 3D transforms) -->
+            <section style="margin-bottom: 3rem;">
+                <div class="products-grid" id="products-grid">
+                    <!-- Products will be dynamically populated here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="catalog-empty-state" style="display: none; text-align: center; padding: 4rem 1rem;">
+                    <i data-lucide="package-x" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1rem;"></i>
+                    <h3 style="font-weight: 700; margin-bottom: 0.5rem;">لا توجد منتجات مطابقة للبحث</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">يرجى تجربة كلمات بحث أخرى أو تغيير معايير التصفية.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- 4. FLOATING CONTACT ACTIONS -->
+    <div class="fab-contact">
+        <a href="#" id="fab-whatsapp-link" target="_blank" rel="noopener noreferrer" class="fab-btn fab-whatsapp" title="تواصل عبر واتساب">
+            <i data-lucide="message-circle" style="width: 24px; height: 24px;"></i>
+        </a>
+        <a href="#" id="fab-phone-link" class="fab-btn fab-phone" title="اتصال هاتفي">
+            <i data-lucide="phone-call" style="width: 22px; height: 22px;"></i>
+        </a>
+    </div>
+
+    <!-- 5. FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #FFF; margin-bottom: 0.75rem;" id="footer-store-name">NT PHONE</h3>
+                    <p style="font-size: 0.85rem; line-height: 1.6; margin-bottom: 1rem;" id="footer-about">
+                        متجر NT PHONE (نوميديا تليفون) - المتخصص في بيع وتوزيع الهواتف الذكية المعتمدة، الإكسسوارات الأصلية، ومستلزمات الحماية الإلكترونية.
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--brand-accent);" id="footer-hours">
+                        أوقات العمل: السبت - الخميس: 09:00 - 20:00
+                    </p>
+                </div>
+                <div>
+                    <h4 style="font-weight: 700; color: #FFF; margin-bottom: 0.75rem;">روابط سريعة</h4>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                        <li><a href="#catalog" onclick="App.filterCategory('all')">قائمة الهواتف</a></li>
+                        <li><a href="#" onclick="App.openAdminAuthModal(); return false;">لوحة الإدارة</a></li>
+                        <li><a href="#" onclick="App.openConfigModal(); return false;">إعدادات الاتصال (Supabase)</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="font-weight: 700; color: #FFF; margin-bottom: 0.75rem;">معلومات المتجر</h4>
+                    <p style="font-size: 0.85rem; margin-bottom: 0.5rem;" id="footer-address">الجزائر</p>
+                    <p style="font-size: 0.85rem; margin-bottom: 0.5rem;" id="footer-phone">+213 00 00 00 00</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                <p>&copy; <span id="copyright-year">2026</span> NT PHONE (NUMIDIA TELEPHONE). جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 6. PRODUCT DETAIL MODAL -->
+    <div class="modal-base" id="product-detail-modal">
+        <div class="modal-container">
+            <button class="modal-close-btn" onclick="App.closeProductModal()">
+                <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="product-modal-grid" id="product-modal-content">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. CART & ORDER INQUIRY DRAWER -->
+    <div class="drawer-overlay" id="cart-drawer-overlay">
+        <div class="drawer-panel">
+            <div class="drawer-header">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="shopping-bag" style="color: var(--brand-accent);"></i>
+                    <h3 style="font-weight: 800; font-size: 1.1rem;">سلة الطلبات</h3>
+                </div>
+                <button class="btn btn-secondary btn-icon" onclick="App.closeCart()">
+                    <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+
+            <div class="drawer-body" id="cart-drawer-body">
+                <!-- Items list or Empty state -->
+                <div id="cart-items-container"></div>
+                
+                <!-- Inquiry / Checkout Form -->
+                <div id="cart-checkout-form" style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+                    <h4 style="font-weight: 700; margin-bottom: 1rem;">معلومات استلام الطلب</h4>
+                    <div class="form-group">
+                        <label for="order-cust-name">الاسم واللقب *</label>
+                        <input type="text" id="order-cust-name" class="form-control" placeholder="مثال: محمد بوعزيز" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-cust-phone">رقم الهاتف (الجزائر) *</label>
+                        <input type="tel" id="order-cust-phone" class="form-control" placeholder="مثال: 0550123456" dir="ltr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-cust-wilaya">الولاية *</label>
+                        <select id="order-cust-wilaya" class="form-control" required>
+                            <option value="">اختر الولاية...</option>
+                            <option value="01 - أدرار">01 - أدرار</option>
+                            <option value="05 - باتنة">05 - باتنة</option>
+                            <option value="07 - بسكرة">07 - بسكرة</option>
+                            <option value="09 - البليدة">09 - البليدة</option>
+                            <option value="16 - الجزائر العاصمة">16 - الجزائر العاصمة</option>
+                            <option value="19 - سطيف">19 - سطيف</option>
+                            <option value="25 - قسنطينة">25 - قسنطينة</option>
+                            <option value="31 - وهران">31 - وهران</option>
+                            <option value="40 - خنشلة">40 - خنشلة</option>
+                            <!-- Remaining 58 Wilayas can be selected or extended -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-cust-address">العنوان أو البلدية *</label>
+                        <input type="text" id="order-cust-address" class="form-control" placeholder="البلدية أو العنوان التفصيلي" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-cust-note">ملاحظات إضافية</label>
+                        <textarea id="order-cust-note" class="form-control" rows="2" placeholder="أي توجيهات خاصة بالطلب..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drawer-footer">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span style="color: var(--text-secondary); font-weight: 600;">المجموع الكلي:</span>
+                    <span id="cart-total-display" style="font-size: 1.25rem; font-weight: 800; color: #FFF;">0 د.ج</span>
+                </div>
+                <div id="cart-action-buttons">
+                    <button class="btn btn-primary" style="width: 100%;" id="btn-proceed-checkout" onclick="App.showOrderForm()">
+                        <span>متابعة الطلب</span>
+                        <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="btn btn-primary" style="width: 100%; display: none;" id="btn-submit-order" onclick="App.submitOrder()">
+                        <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+                        <span>تأكيد وإرسال الطلب</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. CONFIGURATION / BACKEND SETUP MODAL (BROWSER-SAFE PUBLIC KEYS ONLY) -->
+    <div class="modal-base" id="config-modal">
+        <div class="modal-container" style="max-width: 520px; padding: 2rem;">
+            <button class="modal-close-btn" onclick="App.closeConfigModal()">
+                <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i data-lucide="database" style="width: 40px; height: 40px; color: var(--brand-accent); margin: 0 auto 0.5rem;"></i>
+                <h3 style="font-weight: 800;">ربط قاعدة بيانات Supabase</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    أدخل الرابط والمفتاح العام (anon public key). لا تدخل أبداً المفتاح السري (service_role).
+                </p>
+            </div>
+            <div class="form-group">
+                <label for="cfg-supabase-url">Project URL</label>
+                <input type="url" id="cfg-supabase-url" class="form-control" dir="ltr" placeholder="https://xyzcompany.supabase.co">
+            </div>
+            <div class="form-group">
+                <label for="cfg-supabase-key">Anon / Publishable API Key</label>
+                <input type="password" id="cfg-supabase-key" class="form-control" dir="ltr" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="App.saveBackendConfig()">
+                حفظ وإعادة الاتصال
+            </button>
+        </div>
+    </div>
+
+    <!-- 9. ADMIN AUTHENTICATION MODAL -->
+    <div class="modal-base" id="admin-auth-modal">
+        <div class="modal-container" style="max-width: 440px; padding: 2rem;">
+            <button class="modal-close-btn" onclick="App.closeAdminAuthModal()">
+                <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="width: 50px; height: 50px; margin: 0 auto 0.75rem; background: var(--bg-surface-elevated); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-accent);">
+                    <i data-lucide="lock" style="width: 24px; height: 24px; color: var(--brand-accent);"></i>
+                </div>
+                <h3 style="font-weight: 800;">دخول إدارة NT PHONE</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">تسجيل الدخول محمي عبر بروتوكول Supabase Auth</p>
+            </div>
+            <div class="form-group">
+                <label for="auth-email">البريد الإلكتروني للآدمين</label>
+                <input type="email" id="auth-email" class="form-control" dir="ltr" placeholder="admin@ntphone.dz" required>
+            </div>
+            <div class="form-group">
+                <label for="auth-password">كلمة المرور</label>
+                <input type="password" id="auth-password" class="form-control" dir="ltr" required>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="App.loginAdmin()">
+                تسجيل الدخول
+            </button>
+        </div>
+    </div>
+
+    <!-- 10. REAL ADMINISTRATOR DASHBOARD VIEW (DEDICATED FULLSCREEN) -->
+    <div id="admin-panel">
+        <header class="admin-nav">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="brand-logo-badge" style="width: 36px; height: 36px; font-size: 0.9rem;">NT</div>
+                <div>
+                    <h2 style="font-size: 1rem; font-weight: 800;">لوحة تحكم المتجر</h2>
+                    <span id="admin-user-display" style="font-size: 0.75rem; color: var(--brand-accent);">متصل كمدير</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" onclick="App.closeAdminDashboard()">
+                    <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+                    <span>عرض المتجر</span>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="App.logoutAdmin()">
+                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                    <span>خروج</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="container" style="padding-top: 1.5rem; padding-bottom: 3rem;">
+            <!-- Navigation Tabs -->
+            <div class="admin-tab-bar">
+                <div class="admin-tab active" data-target="admin-tab-overview" onclick="App.switchAdminTab('admin-tab-overview', this)">نظرة عامة</div>
+                <div class="admin-tab" data-target="admin-tab-products" onclick="App.switchAdminTab('admin-tab-products', this)">إدارة المنتجات</div>
+                <div class="admin-tab" data-target="admin-tab-categories" onclick="App.switchAdminTab('admin-tab-categories', this)">التصنيفات</div>
+                <div class="admin-tab" data-target="admin-tab-orders" onclick="App.switchAdminTab('admin-tab-orders', this)">الطلبات الواردة</div>
+                <div class="admin-tab" data-target="admin-tab-settings" onclick="App.switchAdminTab('admin-tab-settings', this)">إعدادات المتجر</div>
+            </div>
+
+            <!-- TAB 1: OVERVIEW & STATS -->
+            <div id="admin-tab-overview" class="admin-tab-content">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <h3>إجمالي المنتجات</h3>
+                        <p id="stat-total-products">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>المنتجات المنشورة</h3>
+                        <p id="stat-published-products" style="color: var(--brand-accent);">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>منتجات نفذت من المخزن</h3>
+                        <p id="stat-out-of-stock" style="color: var(--state-danger);">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>إجمالي الطلبات</h3>
+                        <p id="stat-total-orders" style="color: var(--state-success);">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PRODUCTS MANAGER -->
+            <div id="admin-tab-products" class="admin-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-weight: 800;">قائمة المنتجات في قاعدة البيانات</h3>
+                    <button class="btn btn-primary btn-sm" onclick="App.openProductEditorModal()">
+                        <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                        <span>إضافة هاتف / منتج جديد</span>
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الصورة</th>
+                                <th>اسم المنتج</th>
+                                <th>العلامة / الموديل</th>
+                                <th>السعر</th>
+                                <th>المخزون</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: CATEGORIES MANAGER -->
+            <div id="admin-tab-categories" class="admin-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-weight: 800;">إدارة أقسام وتصنيفات المتجر</h3>
+                    <button class="btn btn-primary btn-sm" onclick="App.promptAddCategory()">
+                        <i data-lucide="folder-plus" style="width: 16px; height: 16px;"></i>
+                        <span>إضافة تصنيف جديد</span>
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>اسم التصنيف</th>
+                                <th>الرابط التعريفي (Slug)</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-categories-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: ORDERS MANAGER -->
+            <div id="admin-tab-orders" class="admin-tab-content" style="display: none;">
+                <h3 style="font-weight: 800; margin-bottom: 1rem;">الطلبات واستفسارات الشراء</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الطلب</th>
+                                <th>العميل</th>
+                                <th>الهاتف</th>
+                                <th>الولاية</th>
+                                <th>المبلغ الإجمالي</th>
+                                <th>حالة الطلب</th>
+                                <th>تاريخ الطلب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 5: STORE SETTINGS -->
+            <div id="admin-tab-settings" class="admin-tab-content" style="display: none;">
+                <div style="max-width: 600px; background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                    <h3 style="font-weight: 800; margin-bottom: 1.25rem;">تعديل معلومات وتفاصيل المتجر</h3>
+                    <div class="form-group">
+                        <label for="adm-set-name">اسم المتجر التجاري</label>
+                        <input type="text" id="adm-set-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-set-phone">رقم الهاتف الرسمي</label>
+                        <input type="text" id="adm-set-phone" class="form-control" dir="ltr">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-set-whatsapp">رقم الواتساب (بالصيغة الدولية مثلاً 213550000000)</label>
+                        <input type="text" id="adm-set-whatsapp" class="form-control" dir="ltr">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-set-address">العنوان الجغرافي للمحل</label>
+                        <input type="text" id="adm-set-address" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-set-hours">أوقات العمل</label>
+                        <input type="text" id="adm-set-hours" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-set-welcome">رسالة شاشة الترحيب</label>
+                        <textarea id="adm-set-welcome" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="App.saveStoreSettings()">حفظ التعديلات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. PRODUCT ADD / EDIT MODAL -->
+    <div class="modal-base" id="product-editor-modal">
+        <div class="modal-container" style="max-width: 720px; padding: 2rem;">
+            <button class="modal-close-btn" onclick="App.closeProductEditorModal()">
+                <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+            <h3 id="product-editor-heading" style="font-weight: 800; margin-bottom: 1.5rem;">إضافة منتج جديد</h3>
+            
+            <input type="hidden" id="prod-edit-id">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="prod-edit-name">اسم المنتج / الموديل *</label>
+                    <input type="text" id="prod-edit-name" class="form-control" placeholder="مثال: Samsung Galaxy S24 Ultra" required>
+                </div>
+                <div class="form-group">
+                    <label for="prod-edit-brand">العلامة التجارية (Brand) *</label>
+                    <input type="text" id="prod-edit-brand" class="form-control" placeholder="Samsung, Apple, Xiaomi..." required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="prod-edit-category">التصنيف *</label>
+                    <select id="prod-edit-category" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="prod-edit-condition">حالة الجهاز *</label>
+                    <select id="prod-edit-condition" class="form-control">
+                        <option value="new">جديد في العلبة (New)</option>
+                        <option value="used">مستعمل مجرب (Used)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="prod-edit-price">السعر (د.ج) *</label>
+                    <input type="number" id="prod-edit-price" class="form-control" placeholder="215000" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="prod-edit-compare-price">السعر السابق للشطب (اختياري)</label>
+                    <input type="number" id="prod-edit-compare-price" class="form-control" placeholder="230000" min="0">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="prod-edit-stock">الكمية المتوفرة في المخزن *</label>
+                    <input type="number" id="prod-edit-stock" class="form-control" value="1" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="prod-edit-warranty">مدة الضمان</label>
+                    <input type="text" id="prod-edit-warranty" class="form-control" placeholder="مثال: ضمان رسمي لمدة 12 شهر">
+                </div>
+            </div>
+
+            <!-- Image Upload Pipeline (Android Gallery / Multi-files) -->
+            <div class="form-group">
+                <label>صور المنتج (اختر ملفات من الهاتف أو الجهاز)</label>
+                <input type="file" id="prod-edit-files" class="form-control" multiple accept="image/png, image/jpeg, image/webp" onchange="App.handleImageSelection(event)">
+                <div class="upload-preview-grid" id="upload-previews-box"></div>
+                <small style="color: var(--text-muted); font-size: 0.75rem;">الصورة الأولى ستكون تلقائياً الصورة الرئيسية للبطاقة.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="prod-edit-description">الوصف والتفاصيل</label>
+                <textarea id="prod-edit-description" class="form-control" rows="3" placeholder="مواصفات المعالج، الكاميرات، البطارية، الملحقات المرفقة..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+                    <input type="checkbox" id="prod-edit-published" checked> نشر المنتج في المتجر
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+                    <input type="checkbox" id="prod-edit-featured"> تمييز في الصفحة الأولى
+                </label>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;" onclick="App.saveProductRecord()">
+                حفظ المنتج في قاعدة البيانات
+            </button>
+        </div>
+    </div>
+
+    <!-- 12. TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- -------------------------------------------------------------
+         13. APPLICATION LOGIC ENGINE (VANILLA JAVASCRIPT)
+         ------------------------------------------------------------- -->
+    <script>
+        /**
+         * NT PHONE Application Engine
+         * Implements Data Layer, Supabase Auth, Shopping Cart & Admin Manager
+         */
+        const App = {
+            // Configuration & State
+            config: {
+                supabaseUrl: '',
+                supabaseKey: '',
+                storageBucket: 'products'
+            },
+            client: null,
+            state: {
+                user: null,
+                profile: null,
+                products: [],
+                categories: [],
+                banners: [],
+                settings: {},
+                cart: [],
+                activeCategory: 'all',
+                searchQuery: '',
+                sortBy: 'newest',
+                editingImages: [], // Holds currently selected file objects or URLs for editor
+            },
+
+            // 1. INITIALIZATION & STORAGE RECOVERY
+            async init() {
+                this.loadLocalConfig();
+                this.initLucide();
+                this.bindCart();
+                this.checkIntroPreference();
+                this.handleRouting();
+
+                window.addEventListener('hashchange', () => this.handleRouting());
+
+                if (this.config.supabaseUrl && this.config.supabaseKey) {
+                    this.initSupabase();
+                } else {
+                    this.notify('يرجى ضبط مفاتيح Supabase من أيقونة الإعدادات لتفعيل قاعدة البيانات.', 'warning');
+                    this.renderEmptyCatalog();
+                }
+            },
+
+            initLucide() {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            },
+
+            loadLocalConfig() {
+                const url = localStorage.getItem('nt_sb_url');
+                const key = localStorage.getItem('nt_sb_key');
+                if (url && key) {
+                    this.config.supabaseUrl = url;
+                    this.config.supabaseKey = key;
+                }
+            },
+
+            saveBackendConfig() {
+                const url = document.getElementById('cfg-supabase-url').value.trim();
+                const key = document.getElementById('cfg-supabase-key').value.trim();
+
+                if (!url || !key) {
+                    this.notify('يرجى إدخال الرابط والمفتاح بشكل صحيح', 'danger');
+                    return;
+                }
+
+                localStorage.setItem('nt_sb_url', url);
+                localStorage.setItem('nt_sb_key', key);
+                this.config.supabaseUrl = url;
+                this.config.supabaseKey = key;
+
+                this.closeConfigModal();
+                this.initSupabase();
+                this.notify('تم حفظ الإعدادات، جاري إعادة الاتصال...', 'success');
+            },
+
+            openConfigModal() {
+                document.getElementById('cfg-supabase-url').value = this.config.supabaseUrl || '';
+                document.getElementById('cfg-supabase-key').value = this.config.supabaseKey || '';
+                document.getElementById('config-modal').classList.add('active');
+            },
+
+            closeConfigModal() {
+                document.getElementById('config-modal').classList.remove('active');
+            },
+
+            // 2. BACKEND CONNECTION & AUTH
+            initSupabase() {
+                try {
+                    this.client = window.supabase.createClient(this.config.supabaseUrl, this.config.supabaseKey);
+                    this.listenAuth();
+                    this.fetchAllData();
+                } catch (e) {
+                    this.notify('خطأ أثناء تهيئة اتصال Supabase: ' + e.message, 'danger');
+                }
+            },
+
+            listenAuth() {
+                // Never await database calls directly inside Supabase auth callbacks.
+                // Doing so can hold the auth lock and make subsequent sign-ins hang.
+                const { data } = this.client.auth.onAuthStateChange((event, session) => {
+                    setTimeout(async () => {
+                        try {
+                            if (session && session.user) {
+                                this.state.user = session.user;
+                                await this.verifyAdminRole(session.user.id);
+                            } else {
+                                this.state.user = null;
+                                this.state.profile = null;
+                                if (event !== 'INITIAL_SESSION') this.closeAdminDashboard();
+                            }
+                        } catch (err) {
+                            console.error('Auth state handling failed:', err);
+                        }
+                    }, 0);
+                });
+                this.authSubscription = data?.subscription || null;
+            },
+
+            async verifyAdminRole(userId) {
+                try {
+                    const { data, error } = await this.client
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', userId)
+                        .single();
+
+                    if (!error && data && data.role === 'admin') {
+                        this.state.profile = data;
+                        document.getElementById('admin-user-display').textContent = this.state.user.email;
+                    } else {
+                        this.state.profile = null;
+                    }
+                } catch (err) {
+                    console.error('Role check failed:', err);
+                }
+            },
+
+            async loginAdmin() {
+                const email = document.getElementById('auth-email').value.trim();
+                const password = document.getElementById('auth-password').value;
+
+                if (!this.client) {
+                    this.notify('يرجى إعداد اتصال قاعدة البيانات أولاً', 'danger');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await this.client.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+
+                    const { data: prof, error: pErr } = await this.client
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', data.user.id)
+                        .single();
+
+                    if (pErr || prof?.role !== 'admin') {
+                        await this.client.auth.signOut();
+                        this.notify('تم رفض الوصول: هذا الحساب غير مصرح له بالإدارة', 'danger');
+                        return;
+                    }
+
+                    // Keep the authenticated user and verified role in application state
+                    // before opening the dashboard. Without this, openAdminDashboard()
+                    // sees a null profile and refuses to display the admin panel.
+                    this.state.user = data.user;
+                    this.state.profile = prof;
+                    document.getElementById('admin-user-display').textContent = data.user.email || 'متصل كمدير';
+
+                    this.closeAdminAuthModal();
+                    this.openAdminDashboard();
+                    this.notify('تم التحقق بنجاح! مرحباً بالمدير', 'success');
+                } catch (err) {
+                    this.notify(err.message || 'فشل تسجيل الدخول', 'danger');
+                }
+            },
+
+            async logoutAdmin() {
+                if (this.client) {
+                    await this.client.auth.signOut();
+                }
+                this.closeAdminDashboard();
+                this.notify('تم تسجيل الخروج بنجاح', 'success');
+            },
+
+            // 3. DATA FETCHING (PRODUCTS, CATEGORIES, SETTINGS)
+            async fetchAllData() {
+                if (!this.client) return;
+
+                try {
+                    // Fetch Settings
+                    const { data: setRes } = await this.client.from('store_settings').select('*').single();
+                    if (setRes) {
+                        this.state.settings = setRes;
+                        this.applyStoreSettings(setRes);
+                    }
+
+                    // Fetch Categories
+                    const { data: catRes } = await this.client.from('categories').select('*').order('display_order');
+                    if (catRes) {
+                        this.state.categories = catRes;
+                        this.renderCategoriesBar();
+                    }
+
+                    // Fetch Products
+                    const { data: prodRes, error: prodErr } = await this.client
+                        .from('products')
+                        .select('*')
+                        .eq('is_published', true)
+                        .order('created_at', { ascending: false });
+
+                    if (!prodErr && prodRes) {
+                        this.state.products = prodRes;
+                        this.renderCatalog();
+                    }
+
+                    // Fetch Banners
+                    const { data: banRes } = await this.client.from('banners').select('*').eq('is_active', true);
+                    if (banRes && banRes.length > 0) {
+                        this.state.banners = banRes;
+                        this.renderBanners();
+                    }
+
+                } catch (e) {
+                    console.error('Fetch error:', e);
+                    this.notify('تعذر استرداد بعض البيانات من الخادم', 'warning');
+                }
+            },
+
+            applyStoreSettings(s) {
+                if (s.store_name) {
+                    document.getElementById('header-store-name').textContent = s.store_name;
+                    document.getElementById('footer-store-name').textContent = s.store_name;
+                    document.title = `${s.store_name} | ${s.store_legal_name || ''}`;
+                }
+                if (s.welcome_message) {
+                    document.getElementById('intro-msg').textContent = s.welcome_message;
+                }
+                if (s.phone) {
+                    document.getElementById('footer-phone').textContent = s.phone;
+                    document.getElementById('fab-phone-link').href = `tel:${s.phone.replace(/\s+/g, '')}`;
+                }
+                if (s.whatsapp) {
+                    document.getElementById('fab-whatsapp-link').href = `https://wa.me/${s.whatsapp.replace(/\+/g, '')}`;
+                }
+                if (s.address) {
+                    document.getElementById('footer-address').textContent = s.address;
+                }
+                if (s.business_hours) {
+                    document.getElementById('footer-hours').textContent = s.business_hours;
+                }
+            },
+
+            // 4. STOREFRONT RENDERING
+            renderCategoriesBar() {
+                const box = document.getElementById('category-chips');
+                box.innerHTML = `<button class="cat-chip ${this.state.activeCategory === 'all' ? 'active' : ''}" data-cat="all" onclick="App.filterCategory('all', this)">كل المنتجات</button>`;
+                
+                this.state.categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = `cat-chip ${this.state.activeCategory === cat.id ? 'active' : ''}`;
+                    btn.textContent = cat.name;
+                    btn.onclick = () => this.filterCategory(cat.id, btn);
+                    box.appendChild(btn);
+                });
+            },
+
+            renderBanners() {
+                const wrap = document.getElementById('hero-slider-wrap');
+                if (!this.state.banners.length) return;
+
+                wrap.innerHTML = '';
+                this.state.banners.forEach((b, idx) => {
+                    const slide = document.createElement('div');
+                    slide.className = `hero-slide ${idx === 0 ? 'active' : ''}`;
+                    slide.style.backgroundImage = `url('${b.image_url}')`;
+                    slide.innerHTML = `
+                        <div class="hero-backdrop"></div>
+                        <div class="hero-content">
+                            <span class="badge badge-brand" style="margin-bottom: 0.5rem;">عروض مميزة</span>
+                            <h2>${this.escapeHtml(b.title)}</h2>
+                            <p>${this.escapeHtml(b.subtitle || '')}</p>
+                            <a href="${b.button_link || '#catalog'}" class="btn btn-primary">${this.escapeHtml(b.button_text || 'تسوق الآن')}</a>
+                        </div>
+                    `;
+                    wrap.appendChild(slide);
+                });
+            },
+
+            renderCatalog() {
+                const grid = document.getElementById('products-grid');
+                const emptyState = document.getElementById('catalog-empty-state');
+                const countLabel = document.getElementById('catalog-count-label');
+
+                // Filter by category
+                let list = this.state.products.filter(p => {
+                    if (this.state.activeCategory === 'all') return true;
+                    return p.category_id === this.state.activeCategory;
+                });
+
+                // Filter by search
+                if (this.state.searchQuery) {
+                    const q = this.state.searchQuery.toLowerCase();
+                    list = list.filter(p => 
+                        p.name.toLowerCase().includes(q) || 
+                        p.brand.toLowerCase().includes(q) ||
+                        (p.model && p.model.toLowerCase().includes(q))
+                    );
+                }
+
+                // Sort
+                if (this.state.sortBy === 'price_asc') {
+                    list.sort((a, b) => a.price - b.price);
+                } else if (this.state.sortBy === 'price_desc') {
+                    list.sort((a, b) => b.price - a.price);
+                } else {
+                    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                }
+
+                countLabel.textContent = `عرض ${list.length} منتج`;
+
+                if (list.length === 0) {
+                    grid.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                grid.innerHTML = '';
+
+                list.forEach(p => {
+                    const card = document.createElement('article');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="card-img-wrap" onclick="App.openProductModal('${p.id}')" style="cursor: pointer;">
+                            <img src="${p.main_image}" alt="${this.escapeHtml(p.name)}" loading="lazy">
+                            <div class="card-badges">
+                                ${p.condition === 'new' ? '<span class="badge badge-brand">جديد</span>' : '<span class="badge badge-warning">مستعمل</span>'}
+                                ${p.stock_quantity <= 0 ? '<span class="badge badge-danger">نفذ</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="card-details">
+                            <div>
+                                <span class="card-brand">${this.escapeHtml(p.brand)}</span>
+                                <h3 class="card-title" onclick="App.openProductModal('${p.id}')" style="cursor: pointer;">${this.escapeHtml(p.name)}</h3>
+                            </div>
+                            <div>
+                                <div class="card-pricing">
+                                    <span class="current-price">${this.formatPrice(p.price)}</span>
+                                    ${p.compare_at_price ? `<span class="old-price">${this.formatPrice(p.compare_at_price)}</span>` : ''}
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="App.addToCart('${p.id}')" ${p.stock_quantity <= 0 ? 'disabled' : ''}>
+                                        <i data-lucide="shopping-cart" style="width: 14px; height: 14px;"></i>
+                                        <span>${p.stock_quantity <= 0 ? 'غير متوفر' : 'أضف للسلة'}</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" title="عرض التفاصيل" onclick="App.openProductModal('${p.id}')">
+                                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                this.initLucide();
+            },
+
+            renderEmptyCatalog() {
+                const grid = document.getElementById('products-grid');
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-md);">
+                        <i data-lucide="settings" style="width: 48px; height: 48px; color: var(--brand-accent); margin: 0 auto 1rem;"></i>
+                        <h3 style="font-weight: 800;">بانتظار ربط قاعدة البيانات</h3>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem; max-width: 450px; margin-inline: auto;">
+                            المتجر جاهز ومثبت كملف مستقل. اضغط على الزر أدناه لإدخال رابط ومفتاح Supabase للبدء الفوري.
+                        </p>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="App.openConfigModal()">ضبط الاتصال</button>
+                    </div>
+                `;
+                this.initLucide();
+            },
+
+            filterCategory(catId, btnEl) {
+                this.state.activeCategory = catId;
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                if (btnEl) btnEl.classList.add('active');
+                this.renderCatalog();
+            },
+
+            handleSearch(query) {
+                this.state.searchQuery = query.trim();
+                this.renderCatalog();
+            },
+
+            handleSort(val) {
+                this.state.sortBy = val;
+                this.renderCatalog();
+            },
+
+            // 5. PRODUCT DETAIL MODAL & URL ROUTING
+            openProductModal(id) {
+                const prod = this.state.products.find(p => p.id === id);
+                if (!prod) return;
+
+                // Update hash for deep linking
+                window.location.hash = `product-${prod.id}`;
+
+                const box = document.getElementById('product-modal-content');
+                const images = [prod.main_image, ...(prod.gallery_images || [])];
+
+                box.innerHTML = `
+                    <div>
+                        <div class="gallery-main-view">
+                            <img id="detail-active-img" src="${prod.main_image}" alt="${this.escapeHtml(prod.name)}">
+                        </div>
+                        <div class="gallery-thumbs-strip">
+                            ${images.map((img, i) => `
+                                <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="App.changeDetailImage('${img}', this)">
+                                    <img src="${img}" alt="thumbnail">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-brand">${this.escapeHtml(prod.brand)}</span>
+                        <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0;">${this.escapeHtml(prod.name)}</h2>
+                        
+                        <div style="margin-bottom: 1.25rem;">
+                            <span style="font-size: 1.5rem; font-weight: 800; color: #FFF;">${this.formatPrice(prod.price)}</span>
+                            ${prod.compare_at_price ? `<span class="old-price" style="font-size: 1rem; margin-right: 0.5rem;">${this.formatPrice(prod.compare_at_price)}</span>` : ''}
+                        </div>
+
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                            ${this.escapeHtml(prod.description || 'لا يوجد وصف تفصيلي متوفر لهذا الجهاز حالياً.')}
+                        </p>
+
+                        <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                            <table class="spec-table">
+                                <tr><td>حالة الجهاز:</td><td style="font-weight: 700;">${prod.condition === 'new' ? 'جديد أصلي في العلبة' : 'مستعمل بحالة ممتازة'}</td></tr>
+                                <tr><td>الضمان:</td><td>${this.escapeHtml(prod.warranty_info || 'ضمان فحص وتشغيل متوفر')}</td></tr>
+                                <tr><td>حالة التوفر:</td><td>${prod.stock_quantity > 0 ? `<span style="color: var(--state-success); font-weight: 700;">متوفر (${prod.stock_quantity} قطع)</span>` : '<span style="color: var(--state-danger); font-weight: 700;">غير متوفر</span>'}</td></tr>
+                            </table>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="App.addToCart('${prod.id}'); App.closeProductModal(); App.openCart();" ${prod.stock_quantity <= 0 ? 'disabled' : ''}>
+                                <i data-lucide="shopping-cart" style="width: 18px; height: 18px;"></i>
+                                <span>طلب الجهاز الآن</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon" title="مشاركة الرابط" onclick="App.shareProduct('${prod.id}', '${this.escapeHtml(prod.name)}')">
+                                <i data-lucide="share-2" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('product-detail-modal').classList.add('active');
+                this.initLucide();
+            },
+
+            closeProductModal() {
+                document.getElementById('product-detail-modal').classList.remove('active');
+                history.replaceState(null, null, ' ');
+            },
+
+            changeDetailImage(url, thumbEl) {
+                document.getElementById('detail-active-img').src = url;
+                document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+                thumbEl.classList.add('active');
+            },
+
+            async shareProduct(id, name) {
+                const url = `${window.location.origin}${window.location.pathname}#product-${id}`;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title: name, text: `اطلع على ${name} في NT PHONE`, url });
+                    } catch (e) {}
+                } else {
+                    navigator.clipboard.writeText(url);
+                    this.notify('تم نسخ رابط المنتج إلى الحافظة', 'success');
+                }
+            },
+
+            handleRouting() {
+                const hash = window.location.hash;
+                if (hash.startsWith('#product-')) {
+                    const id = hash.replace('#product-', '');
+                    // Wait if products aren't fetched yet
+                    if (this.state.products.length > 0) {
+                        this.openProductModal(id);
+                    } else {
+                        setTimeout(() => this.openProductModal(id), 600);
+                    }
+                }
+            },
+
+            // 6. CLIENT CART & ORDER FLOW
+            bindCart() {
+                const saved = localStorage.getItem('nt_cart');
+                if (saved) {
+                    try { this.state.cart = JSON.parse(saved); } catch(e) { this.state.cart = []; }
+                }
+                this.updateCartBadge();
+            },
+
+            saveCart() {
+                localStorage.setItem('nt_cart', JSON.stringify(this.state.cart));
+                this.updateCartBadge();
+                this.renderCartItems();
+            },
+
+            updateCartBadge() {
+                const count = this.state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                document.getElementById('cart-count').textContent = count;
+            },
+
+            addToCart(prodId) {
+                const prod = this.state.products.find(p => p.id === prodId);
+                if (!prod || prod.stock_quantity <= 0) {
+                    this.notify('عذراً، هذا المنتج غير متوفر حالياً', 'danger');
+                    return;
+                }
+
+                const exist = this.state.cart.find(i => i.product_id === prodId);
+                if (exist) {
+                    if (exist.quantity + 1 > prod.stock_quantity) {
+                        this.notify('تم بلوغ الحد الأقصى للمخزون المتوفر', 'warning');
+                        return;
+                    }
+                    exist.quantity++;
+                } else {
+                    this.state.cart.push({
+                        product_id: prod.id,
+                        name: prod.name,
+                        price: prod.price,
+                        image: prod.main_image,
+                        quantity: 1
+                    });
+                }
+
+                this.saveCart();
+                this.notify(`تم إضافة ${prod.name} إلى السلة`, 'success');
+            },
+
+            openCart() {
+                this.renderCartItems();
+                document.getElementById('cart-drawer-overlay').classList.add('active');
+            },
+
+            closeCart() {
+                document.getElementById('cart-drawer-overlay').classList.remove('active');
+            },
+
+            renderCartItems() {
+                const container = document.getElementById('cart-items-container');
+                const totalDisplay = document.getElementById('cart-total-display');
+                const formSection = document.getElementById('cart-checkout-form');
+                const btnProceed = document.getElementById('btn-proceed-checkout');
+                const btnSubmit = document.getElementById('btn-submit-order');
+
+                if (this.state.cart.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 3rem 1rem;">
+                            <i data-lucide="shopping-cart" style="width: 42px; height: 42px; color: var(--text-muted); margin: 0 auto 1rem;"></i>
+                            <h4 style="font-weight: 700;">سلة المشتريات فارغة</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">تصفح الهواتف المتوفرة وأضف ما يناسبك.</p>
+                        </div>
+                    `;
+                    totalDisplay.textContent = '0 د.ج';
+                    formSection.style.display = 'none';
+                    btnProceed.style.display = 'none';
+                    btnSubmit.style.display = 'none';
+                    this.initLucide();
+                    return;
+                }
+
+                btnProceed.style.display = formSection.style.display === 'block' ? 'none' : 'flex';
+                btnSubmit.style.display = formSection.style.display === 'block' ? 'flex' : 'none';
+
+                let total = 0;
+                container.innerHTML = this.state.cart.map(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    return `
+                        <div class="cart-item-row">
+                            <img src="${item.image}" alt="${this.escapeHtml(item.name)}" class="cart-item-img">
+                            <div>
+                                <h5 style="font-size: 0.85rem; font-weight: 700; color: #FFF;">${this.escapeHtml(item.name)}</h5>
+                                <span style="font-size: 0.8rem; color: var(--brand-accent); font-weight: 700;">${this.formatPrice(item.price)}</span>
+                                <div class="qty-control">
+                                    <button class="qty-btn" onclick="App.adjustCartQty('${item.product_id}', -1)">-</button>
+                                    <span class="qty-val">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="App.adjustCartQty('${item.product_id}', 1)">+</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-icon" style="color: var(--state-danger);" onclick="App.removeCartItem('${item.product_id}')">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                totalDisplay.textContent = this.formatPrice(total);
+                this.initLucide();
+            },
+
+            adjustCartQty(prodId, delta) {
+                const item = this.state.cart.find(i => i.product_id === prodId);
+                const prod = this.state.products.find(p => p.id === prodId);
+                if (!item) return;
+
+                if (delta > 0 && prod && item.quantity + delta > prod.stock_quantity) {
+                    this.notify('لا توجد كميات كافية في المخزن', 'warning');
+                    return;
+                }
+
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    this.state.cart = this.state.cart.filter(i => i.product_id !== prodId);
+                }
+                this.saveCart();
+            },
+
+            removeCartItem(prodId) {
+                this.state.cart = this.state.cart.filter(i => i.product_id !== prodId);
+                this.saveCart();
+            },
+
+            showOrderForm() {
+                document.getElementById('cart-checkout-form').style.display = 'block';
+                document.getElementById('btn-proceed-checkout').style.display = 'none';
+                document.getElementById('btn-submit-order').style.display = 'flex';
+            },
+
+            async submitOrder() {
+                const name = document.getElementById('order-cust-name').value.trim();
+                const phone = document.getElementById('order-cust-phone').value.trim();
+                const wilaya = document.getElementById('order-cust-wilaya').value;
+                const address = document.getElementById('order-cust-address').value.trim();
+                const note = document.getElementById('order-cust-note').value.trim();
+
+                if (!name || !phone || !wilaya || !address) {
+                    this.notify('يرجى ملء جميع الحقول المطلوبة (*)', 'danger');
+                    return;
+                }
+
+                // Phone format validation (Algerian formats: 05/06/07/02)
+                const dzPhoneRegex = /^(0)(5|6|7|2)[0-9]{8}$/;
+                if (!dzPhoneRegex.test(phone.replace(/\s+/g, ''))) {
+                    this.notify('يرجى إدخال رقم هاتف جزائري صحيح (مثال: 0550123456)', 'danger');
+                    return;
+                }
+
+                const payloadItems = this.state.cart.map(i => ({
+                    product_id: i.product_id,
+                    quantity: i.quantity,
+                    variant: ''
+                }));
+
+                // If backend is connected, persist via secure stored procedure
+                if (this.client) {
+                    try {
+                        const { data, error } = await this.client.rpc('create_secure_order', {
+                            p_customer_name: name,
+                            p_customer_phone: phone,
+                            p_wilaya: wilaya,
+                            p_commune: address,
+                            p_delivery_type: 'delivery',
+                            p_delivery_address: address,
+                            p_customer_note: note,
+                            p_items: payloadItems
+                        });
+
+                        if (error) throw error;
+                        this.notify('تم تسجيل طلبك بنجاح في قاعدة بيانات المتجر!', 'success');
+                    } catch (err) {
+                        this.notify('تعذر حفظ الطلب في الخادم: ' + err.message, 'danger');
+                        return;
+                    }
+                }
+
+                // WhatsApp message generation fallback / immediate customer confirmation
+                const waPhone = this.state.settings.whatsapp || '21300000000';
+                let waMsg = `*طلب جديد من متجر NT PHONE*%0A`;
+                waMsg += `*الاسم:* ${encodeURIComponent(name)}%0A`;
+                waMsg += `*الهاتف:* ${encodeURIComponent(phone)}%0A`;
+                waMsg += `*الولاية والعنوان:* ${encodeURIComponent(wilaya)} - ${encodeURIComponent(address)}%0A`;
+                waMsg += `*المنتجات المطلوبة:*%0A`;
+                this.state.cart.forEach(i => {
+                    waMsg += `- ${encodeURIComponent(i.name)} (الكمية: ${i.quantity})%0A`;
+                });
+                waMsg += `*الملاحظات:* ${encodeURIComponent(note || 'لا توجد')}`;
+
+                // Clear cart
+                this.state.cart = [];
+                this.saveCart();
+                this.closeCart();
+
+                // Open WhatsApp inquiry directly
+                window.open(`https://wa.me/${waPhone.replace(/\+/g, '')}?text=${waMsg}`, '_blank');
+            },
+
+            // 7. REAL ADMINISTRATOR DASHBOARD
+            async openAdminAuthModal() {
+                // Check the persisted session first; in-memory state is reset on refresh.
+                if (this.client) {
+                    try {
+                        const { data: sessionData, error } = await this.client.auth.getSession();
+                        if (!error && sessionData?.session?.user) {
+                            this.state.user = sessionData.session.user;
+                            await this.verifyAdminRole(sessionData.session.user.id);
+                            if (this.state.profile?.role === 'admin') {
+                                this.closeAdminAuthModal();
+                                this.openAdminDashboard();
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Session restore failed:', err);
+                    }
+                }
+                document.getElementById('admin-auth-modal').classList.add('active');
+            },
+
+            closeAdminAuthModal() {
+                document.getElementById('admin-auth-modal').classList.remove('active');
+            },
+
+            openAdminDashboard() {
+                if (!this.state.profile || this.state.profile.role !== 'admin') {
+                    this.notify('الدخول مخصص للمديرين المصرح لهم فقط', 'danger');
+                    return;
+                }
+                document.getElementById('admin-panel').classList.add('active');
+                this.loadAdminMetrics();
+                this.loadAdminProducts();
+                this.loadAdminCategories();
+                this.loadAdminOrders();
+                this.loadAdminSettingsForm();
+                this.initLucide();
+            },
+
+            closeAdminDashboard() {
+                document.getElementById('admin-panel').classList.remove('active');
+                this.fetchAllData(); // Refresh client view
+            },
+
+            switchAdminTab(tabId, el) {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
+                el.classList.add('active');
+                document.getElementById(tabId).style.display = 'block';
+            },
+
+            async loadAdminMetrics() {
+                if (!this.client) return;
+                const { count: totalProds } = await this.client.from('products').select('*', { count: 'exact', head: true });
+                const { count: pubProds } = await this.client.from('products').select('*', { count: 'exact', head: true }).eq('is_published', true);
+                const { count: oosProds } = await this.client.from('products').select('*', { count: 'exact', head: true }).eq('stock_quantity', 0);
+                const { count: orderCount } = await this.client.from('orders').select('*', { count: 'exact', head: true });
+
+                document.getElementById('stat-total-products').textContent = totalProds || 0;
+                document.getElementById('stat-published-products').textContent = pubProds || 0;
+                document.getElementById('stat-out-of-stock').textContent = oosProds || 0;
+                document.getElementById('stat-total-orders').textContent = orderCount || 0;
+            },
+
+            async loadAdminProducts() {
+                if (!this.client) return;
+                const { data, error } = await this.client.from('products').select('*').order('created_at', { ascending: false });
+                const tbody = document.getElementById('admin-products-table-body');
+                if (error || !data) return;
+
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td><img src="${p.main_image}" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #000;"></td>
+                        <td style="font-weight: 700;">${this.escapeHtml(p.name)}</td>
+                        <td>${this.escapeHtml(p.brand)}</td>
+                        <td>${this.formatPrice(p.price)}</td>
+                        <td>${p.stock_quantity}</td>
+                        <td>${p.is_published ? '<span class="badge badge-success">منشور</span>' : '<span class="badge badge-warning">مسودة</span>'}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="App.editProduct('${p.id}')">تعديل</button>
+                            <button class="btn btn-danger btn-sm" onclick="App.deleteProduct('${p.id}')">حذف</button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            async loadAdminCategories() {
+                if (!this.client) return;
+                const { data } = await this.client.from('categories').select('*').order('display_order');
+                const tbody = document.getElementById('admin-categories-table-body');
+                if (!data) return;
+
+                tbody.innerHTML = data.map(c => `
+                    <tr>
+                        <td style="font-weight: 700;">${this.escapeHtml(c.name)}</td>
+                        <td><code>${this.escapeHtml(c.slug)}</code></td>
+                        <td>${c.is_enabled ? '<span class="badge badge-success">مفعل</span>' : '<span class="badge badge-danger">معطل</span>'}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="App.deleteCategory('${c.id}')">حذف</button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            async loadAdminOrders() {
+                if (!this.client) return;
+                const { data } = await this.client.from('orders').select('*').order('created_at', { ascending: false });
+                const tbody = document.getElementById('admin-orders-table-body');
+                if (!data) return;
+
+                tbody.innerHTML = data.map(o => `
+                    <tr>
+                        <td>#${o.order_number || o.id.slice(0, 6)}</td>
+                        <td style="font-weight: 700;">${this.escapeHtml(o.customer_name)}</td>
+                        <td dir="ltr">${this.escapeHtml(o.customer_phone)}</td>
+                        <td>${this.escapeHtml(o.wilaya)}</td>
+                        <td style="font-weight: 700;">${this.formatPrice(o.total_amount)}</td>
+                        <td><span class="badge badge-brand">${o.status}</span></td>
+                        <td>${new Date(o.created_at).toLocaleDateString('ar-DZ')}</td>
+                    </tr>
+                `).join('');
+            },
+
+            loadAdminSettingsForm() {
+                const s = this.state.settings;
+                document.getElementById('adm-set-name').value = s.store_name || '';
+                document.getElementById('adm-set-phone').value = s.phone || '';
+                document.getElementById('adm-set-whatsapp').value = s.whatsapp || '';
+                document.getElementById('adm-set-address').value = s.address || '';
+                document.getElementById('adm-set-hours').value = s.business_hours || '';
+                document.getElementById('adm-set-welcome').value = s.welcome_message || '';
+            },
+
+            async saveStoreSettings() {
+                if (!this.client) return;
+                const payload = {
+                    store_name: document.getElementById('adm-set-name').value.trim(),
+                    phone: document.getElementById('adm-set-phone').value.trim(),
+                    whatsapp: document.getElementById('adm-set-whatsapp').value.trim(),
+                    address: document.getElementById('adm-set-address').value.trim(),
+                    business_hours: document.getElementById('adm-set-hours').value.trim(),
+                    welcome_message: document.getElementById('adm-set-welcome').value.trim(),
+                    updated_at: new Date()
+                };
+
+                const { error } = await this.client.from('store_settings').update(payload).eq('id', 1);
+                if (error) {
+                    this.notify('فشل حفظ الإعدادات: ' + error.message, 'danger');
+                } else {
+                    this.notify('تم تحديث إعدادات المتجر بنجاح', 'success');
+                    this.state.settings = { ...this.state.settings, ...payload };
+                    this.applyStoreSettings(this.state.settings);
+                }
+            },
+
+            // 8. PRODUCT MANAGEMENT & MULTI-IMAGE UPLOADER
+            openProductEditorModal(editId = null) {
+                const heading = document.getElementById('product-editor-heading');
+                const catSelect = document.getElementById('prod-edit-category');
+
+                catSelect.innerHTML = this.state.categories.map(c => `
+                    <option value="${c.id}">${this.escapeHtml(c.name)}</option>
+                `).join('');
+
+                this.state.editingImages = [];
+                document.getElementById('upload-previews-box').innerHTML = '';
+                document.getElementById('prod-edit-files').value = '';
+
+                if (editId) {
+                    heading.textContent = 'تعديل بيانات المنتج';
+                    const prod = this.state.products.find(p => p.id === editId);
+                    document.getElementById('prod-edit-id').value = prod.id;
+                    document.getElementById('prod-edit-name').value = prod.name;
+                    document.getElementById('prod-edit-brand').value = prod.brand;
+                    document.getElementById('prod-edit-category').value = prod.category_id || '';
+                    document.getElementById('prod-edit-condition').value = prod.condition;
+                    document.getElementById('prod-edit-price').value = prod.price;
+                    document.getElementById('prod-edit-compare-price').value = prod.compare_at_price || '';
+                    document.getElementById('prod-edit-stock').value = prod.stock_quantity;
+                    document.getElementById('prod-edit-warranty').value = prod.warranty_info || '';
+                    document.getElementById('prod-edit-description').value = prod.description || '';
+                    document.getElementById('prod-edit-published').checked = prod.is_published;
+                    document.getElementById('prod-edit-featured').checked = prod.is_featured;
+
+                    this.state.editingImages = [prod.main_image, ...(prod.gallery_images || [])];
+                    this.renderUploadPreviews();
+                } else {
+                    heading.textContent = 'إضافة هاتف / منتج جديد';
+                    document.getElementById('prod-edit-id').value = '';
+                    document.getElementById('prod-edit-name').value = '';
+                    document.getElementById('prod-edit-brand').value = '';
+                    document.getElementById('prod-edit-price').value = '';
+                    document.getElementById('prod-edit-compare-price').value = '';
+                    document.getElementById('prod-edit-stock').value = '1';
+                    document.getElementById('prod-edit-warranty').value = '';
+                    document.getElementById('prod-edit-description').value = '';
+                    document.getElementById('prod-edit-published').checked = true;
+                    document.getElementById('prod-edit-featured').checked = false;
+                }
+
+                document.getElementById('product-editor-modal').classList.add('active');
+            },
+
+            closeProductEditorModal() {
+                document.getElementById('product-editor-modal').classList.remove('active');
+            },
+
+            handleImageSelection(event) {
+                const files = Array.from(event.target.files);
+                files.forEach(f => {
+                    this.state.editingImages.push(f);
+                });
+                this.renderUploadPreviews();
+            },
+
+            renderUploadPreviews() {
+                const box = document.getElementById('upload-previews-box');
+                box.innerHTML = '';
+                this.state.editingImages.forEach((img, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'upload-preview-item';
+                    const src = img instanceof File ? URL.createObjectURL(img) : img;
+                    item.innerHTML = `
+                        <img src="${src}" alt="preview">
+                        <button class="upload-preview-del" onclick="App.removeEditingImage(${idx})">&times;</button>
+                    `;
+                    box.appendChild(item);
+                });
+            },
+
+            removeEditingImage(idx) {
+                this.state.editingImages.splice(idx, 1);
+                this.renderUploadPreviews();
+            },
+
+            async saveProductRecord() {
+                const id = document.getElementById('prod-edit-id').value;
+                const name = document.getElementById('prod-edit-name').value.trim();
+                const brand = document.getElementById('prod-edit-brand').value.trim();
+                const category_id = document.getElementById('prod-edit-category').value;
+                const condition = document.getElementById('prod-edit-condition').value;
+                const price = parseFloat(document.getElementById('prod-edit-price').value);
+                const compare_at_price = parseFloat(document.getElementById('prod-edit-compare-price').value) || null;
+                const stock_quantity = parseInt(document.getElementById('prod-edit-stock').value);
+                const warranty_info = document.getElementById('prod-edit-warranty').value.trim();
+                const description = document.getElementById('prod-edit-description').value.trim();
+                const is_published = document.getElementById('prod-edit-published').checked;
+                const is_featured = document.getElementById('prod-edit-featured').checked;
+
+                if (!name || !brand || isNaN(price) || isNaN(stock_quantity)) {
+                    this.notify('يرجى إكمال الحقول الأساسية بشكل صحيح', 'danger');
+                    return;
+                }
+
+                if (this.state.editingImages.length === 0) {
+                    this.notify('يرجى تحديد صورة واحدة على الأقل للمنتج', 'danger');
+                    return;
+                }
+
+                this.notify('جاري حفظ المنتج ورفع الصور...', 'warning');
+
+                // 1. Upload files to Supabase Storage Bucket
+                const finalUrls = [];
+                for (const imgItem of this.state.editingImages) {
+                    if (imgItem instanceof File) {
+                        try {
+                            const fileExt = imgItem.name.split('.').pop();
+                            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+                            const filePath = `products/${fileName}`;
+
+                            const { error: upErr } = await this.client.storage
+                                .from(this.config.storageBucket)
+                                .upload(filePath, imgItem);
+
+                            if (upErr) throw upErr;
+
+                            const { data: pubData } = this.client.storage
+                                .from(this.config.storageBucket)
+                                .getPublicUrl(filePath);
+
+                            finalUrls.push(pubData.publicUrl);
+                        } catch (err) {
+                            this.notify('فشل رفع أحد ملفات الصور: ' + err.message, 'danger');
+                            return;
+                        }
+                    } else {
+                        // Already a hosted URL
+                        finalUrls.push(imgItem);
+                    }
+                }
+
+                const payload = {
+                    name,
+                    brand,
+                    category_id,
+                    condition,
+                    price,
+                    compare_at_price,
+                    stock_quantity,
+                    warranty_info,
+                    description,
+                    is_published,
+                    is_featured,
+                    main_image: finalUrls[0],
+                    gallery_images: finalUrls.slice(1),
+                    updated_at: new Date()
+                };
+
+                let resError = null;
+                if (id) {
+                    const { error } = await this.client.from('products').update(payload).eq('id', id);
+                    resError = error;
+                } else {
+                    const { error } = await this.client.from('products').insert([payload]);
+                    resError = error;
+                }
+
+                if (resError) {
+                    this.notify('فشل حفظ المنتج في قاعدة البيانات: ' + resError.message, 'danger');
+                } else {
+                    this.notify('تم حفظ المنتج بنجاح!', 'success');
+                    this.closeProductEditorModal();
+                    this.loadAdminProducts();
+                    this.loadAdminMetrics();
+                }
+            },
+
+            editProduct(id) {
+                this.openProductEditorModal(id);
+            },
+
+            async deleteProduct(id) {
+                if (!confirm('هل أنت متأكد من رغبتك في حذف هذا المنتج نهائياً من المتجر؟')) return;
+
+                const { error } = await this.client.from('products').delete().eq('id', id);
+                if (error) {
+                    this.notify('فشل حذف المنتج: ' + error.message, 'danger');
+                } else {
+                    this.notify('تم حذف المنتج بنجاح', 'success');
+                    this.loadAdminProducts();
+                    this.loadAdminMetrics();
+                }
+            },
+
+            // 9. CATEGORY MANAGEMENT
+            async promptAddCategory() {
+                const name = prompt('أدخل اسم التصنيف الجديد (مثال: الهواتف الذكية):');
+                if (!name) return;
+                const slug = name.toLowerCase().replace(/[\s\W]+/g, '-');
+
+                const { error } = await this.client.from('categories').insert([{ name, slug }]);
+                if (error) {
+                    this.notify('فشل إضافة التصنيف: ' + error.message, 'danger');
+                } else {
+                    this.notify('تم إضافة التصنيف بنجاح', 'success');
+                    this.loadAdminCategories();
+                }
+            },
+
+            async deleteCategory(id) {
+                if (!confirm('حذف هذا القسم قد يؤثر على المنتجات المرتبطة به. هل تريد المتابعة؟')) return;
+
+                const { error } = await this.client.from('categories').delete().eq('id', id);
+                if (error) {
+                    this.notify('تعذر حذف القسم: ' + error.message, 'danger');
+                } else {
+                    this.notify('تم حذف القسم', 'success');
+                    this.loadAdminCategories();
+                }
+            },
+
+            // 10. INTRO PREFERENCES & UTILITIES
+            checkIntroPreference() {
+                const skipped = localStorage.getItem('nt_skip_intro');
+                if (skipped === 'true') {
+                    document.getElementById('intro-overlay').classList.add('hidden');
+                }
+            },
+
+            dismissIntro(userAction = false) {
+                if (userAction && document.getElementById('skip-intro-check').checked) {
+                    localStorage.setItem('nt_skip_intro', 'true');
+                }
+                document.getElementById('intro-overlay').classList.add('hidden');
+            },
+
+            formatPrice(amt) {
+                return new Intl.NumberFormat('fr-DZ', {
+                    style: 'decimal',
+                    maximumFractionDigits: 0
+                }).format(amt) + ' د.ج';
+            },
+
+            escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            },
+
+            notify(message, type = 'default') {
+                const box = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast-msg ${type}`;
+                toast.innerHTML = `<span>${this.escapeHtml(message)}</span>`;
+                box.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+        };
+
+        // DOM Ready Initializer
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
+    </script>
+</body>
+</html>
