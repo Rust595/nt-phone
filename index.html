@@ -916,6 +916,30 @@
             box-shadow: 0 0 0 2px var(--brand-glow);
         }
 
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* ---- Admin login helpers ---- */
+        .auth-msg { display: none; margin-bottom: 1rem; padding: 0.7rem 0.9rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; line-height: 1.7; border: 1px solid transparent; }
+        .auth-msg.show { display: block; }
+        .auth-msg.error { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); color: #FCA5A5; }
+        .auth-msg.success { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4); color: #6EE7B7; }
+        .auth-msg.info { background: var(--brand-glow); border-color: var(--border-accent); color: var(--brand-accent); }
+        .auth-sql { margin-top: 0.6rem; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.5rem 0.6rem; }
+        .auth-sql code { display: block; direction: ltr; text-align: left; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.72rem; color: #E2E8F0; white-space: pre-wrap; word-break: break-all; font-weight: 400; }
+        .auth-link { background: none; border: none; padding: 0; color: var(--brand-accent); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-family: inherit; }
+        .auth-link:hover { color: #FFFFFF; }
+        .auth-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem; }
+        .auth-label-row label { margin-bottom: 0; }
+        .auth-options { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin: 0.25rem 0 0.75rem; font-size: 0.8rem; color: var(--text-secondary); }
+        .auth-options label { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+        .auth-conn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; }
+        .auth-conn::before { content: ''; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--text-muted); }
+        .auth-conn.ok { color: var(--state-success); }
+        .auth-conn.ok::before { background: var(--state-success); }
+        .auth-conn.bad { color: var(--state-warning); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+        .auth-conn.bad::before { background: var(--state-warning); }
+        .auth-foot { margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid var(--border-subtle); text-align: center; font-size: 0.75rem; color: var(--text-muted); }
+
         /* -------------------------------------------------------------
            11. REAL ADMIN DASHBOARD STYLES
            ------------------------------------------------------------- */
@@ -1437,17 +1461,51 @@
                 <h3 style="font-weight: 800;">دخول إدارة NT PHONE</h3>
                 <p style="font-size: 0.85rem; color: var(--text-secondary);">تسجيل الدخول محمي عبر بروتوكول Supabase Auth</p>
             </div>
-            <div class="form-group">
-                <label for="auth-email">البريد الإلكتروني للآدمين</label>
-                <input type="email" id="auth-email" class="form-control" dir="ltr" placeholder="admin@ntphone.dz" required>
-            </div>
-            <div class="form-group">
-                <label for="auth-password">كلمة المرور</label>
-                <input type="password" id="auth-password" class="form-control" dir="ltr" required>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="App.loginAdmin()">
-                تسجيل الدخول
-            </button>
+            <div id="auth-conn" class="auth-conn"></div>
+            <div id="auth-msg" class="auth-msg" role="alert" aria-live="polite"></div>
+
+            <!-- Panel: login -->
+            <form id="auth-login-panel" onsubmit="App.loginAdmin(event)" novalidate>
+                <div class="form-group">
+                    <label for="auth-email">البريد الإلكتروني للآدمين</label>
+                    <input type="email" id="auth-email" name="email" class="form-control" dir="ltr" placeholder="admin@ntphone.dz"
+                           autocomplete="username" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <div class="auth-label-row">
+                        <label for="auth-password">كلمة المرور</label>
+                        <button type="button" class="auth-link" onclick="App.toggleAuthPassword(this)">إظهار</button>
+                    </div>
+                    <input type="password" id="auth-password" name="password" class="form-control" dir="ltr"
+                           autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="auth-options">
+                    <label><input type="checkbox" id="auth-remember" checked> تذكّر البريد الإلكتروني</label>
+                    <button type="button" class="auth-link" onclick="App.sendPasswordReset()">نسيت كلمة المرور؟</button>
+                </div>
+                <button type="submit" id="auth-submit" class="btn btn-primary" style="width: 100%; margin-top: 0.25rem;">
+                    <span id="auth-submit-label">تسجيل الدخول</span>
+                </button>
+                <div class="auth-foot">
+                    للدخول السريع احفظ رابط الموقع مع <span dir="ltr">#admin</span> في المفضلة
+                    · <button type="button" class="auth-link" onclick="App.copyQuickLink()">نسخ الرابط</button>
+                </div>
+            </form>
+
+            <!-- Panel: set a new password (after clicking the reset link in the email) -->
+            <form id="auth-recovery-panel" onsubmit="App.saveNewPassword(event)" style="display: none;" novalidate>
+                <div class="form-group">
+                    <label for="auth-new-password">كلمة المرور الجديدة (8 أحرف على الأقل)</label>
+                    <input type="password" id="auth-new-password" class="form-control" dir="ltr" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <label for="auth-new-password2">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" id="auth-new-password2" class="form-control" dir="ltr" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                </div>
+                <button type="submit" id="auth-recovery-submit" class="btn btn-primary" style="width: 100%; margin-top: 0.25rem;">
+                    حفظ كلمة المرور الجديدة
+                </button>
+            </form>
         </div>
     </div>
 
@@ -1809,77 +1867,421 @@
                 }
             },
 
+            // ------------------------------------------------------------
+            // AUTH LISTENER
+            // مهم: لا تستدعِ أي دالة Supabase بـ await داخل مستمع onAuthStateChange مباشرة،
+            // لأن ذلك يسبب تعليقًا (deadlock) في supabase-js ويجمّد تسجيل الدخول.
+            // لذلك نؤجّل المعالجة إلى خارج المستمع بـ setTimeout.
+            // ------------------------------------------------------------
             listenAuth() {
-                this.client.auth.onAuthStateChange(async (event, session) => {
+                if (this._authSub) {
+                    try { this._authSub.unsubscribe(); } catch (e) { /* ignore */ }
+                    this._authSub = null;
+                }
+                const { data } = this.client.auth.onAuthStateChange((event, session) => {
+                    setTimeout(() => this.handleAuthEvent(event, session), 0);
+                });
+                this._authSub = data && data.subscription;
+            },
+
+            async handleAuthEvent(event, session) {
+                try {
+                    if (event === 'PASSWORD_RECOVERY') {
+                        this.state.user = session && session.user ? session.user : null;
+                        this.showRecoveryMode();
+                        return;
+                    }
+
                     if (session && session.user) {
                         this.state.user = session.user;
-                        await this.verifyAdminRole(session.user.id);
+                        if (this._recoveryMode || this._loggingIn) return; // loginAdmin / saveNewPassword يتولّيان الأمر
+
+                        const res = await this.verifyAdminRole(session.user.id);
+                        const modal = document.getElementById('admin-auth-modal');
+                        // جلسة مستعادة (إعادة فتح الصفحة): افتح اللوحة تلقائيًا إذا كانت نافذة الدخول مفتوحة
+                        if (event === 'INITIAL_SESSION' && res.ok && modal && modal.classList.contains('active')) {
+                            this.closeAdminAuthModal();
+                            this.openAdminDashboard();
+                        }
                     } else {
                         this.state.user = null;
                         this.state.profile = null;
-                        this.closeAdminDashboard();
+                        const panel = document.getElementById('admin-panel');
+                        if (panel && panel.classList.contains('active')) this.closeAdminDashboard();
                     }
-                });
+                } catch (err) {
+                    console.error('Auth event handling failed:', err);
+                } finally {
+                    if (event === 'INITIAL_SESSION') {
+                        this._authReady = true;
+                        this.resolvePendingAdminOpen();
+                    }
+                }
             },
 
+            // يرجع { ok, reason, error } — reason: 'not-admin' | 'no-profile' | 'error'
             async verifyAdminRole(userId) {
                 try {
                     const { data, error } = await this.client
                         .from('profiles')
                         .select('role')
                         .eq('id', userId)
-                        .single();
+                        .maybeSingle();
 
-                    if (!error && data && data.role === 'admin') {
-                        this.state.profile = data;
-                        document.getElementById('admin-user-display').textContent = this.state.user.email;
-                    } else {
+                    if (error) {
                         this.state.profile = null;
+                        return { ok: false, reason: 'error', error };
                     }
+                    if (data && data.role === 'admin') {
+                        this.state.profile = data;
+                        const el = document.getElementById('admin-user-display');
+                        if (el && this.state.user) el.textContent = this.state.user.email;
+                        return { ok: true };
+                    }
+                    this.state.profile = null;
+                    return { ok: false, reason: data ? 'not-admin' : 'no-profile' };
                 } catch (err) {
                     console.error('Role check failed:', err);
+                    this.state.profile = null;
+                    return { ok: false, reason: 'error', error: err };
                 }
             },
 
-            async loginAdmin() {
-                const email = document.getElementById('auth-email').value.trim();
-                const password = document.getElementById('auth-password').value;
+            // ------------------------------------------------------------
+            // ADMIN LOGIN
+            // ------------------------------------------------------------
+            async loginAdmin(e) {
+                if (e && e.preventDefault) e.preventDefault();
+                if (this._loggingIn) return; // منع الضغط المتكرر أثناء المعالجة
+
+                const emailEl = document.getElementById('auth-email');
+                const passEl = document.getElementById('auth-password');
+                const email = emailEl.value.trim();
+                const password = passEl.value;
+
+                this.setAuthMsg('');
 
                 if (!this.client) {
-                    this.notify('يرجى إعداد اتصال قاعدة البيانات أولاً', 'danger');
+                    this.refreshAuthConn();
+                    this.setAuthMsg('قاعدة البيانات غير مُعدّة بعد. اضغط على «ضبط الاتصال» أعلاه وأدخل رابط ومفتاح Supabase.', 'error');
+                    return;
+                }
+                if (!email || !password) {
+                    this.setAuthMsg('اكتب البريد الإلكتروني وكلمة المرور.', 'error');
+                    (email ? passEl : emailEl).focus();
                     return;
                 }
 
+                this._loggingIn = true;
+                this.setAuthLoading(true, 'جاري التحقق...');
                 try {
-                    const { data, error } = await this.client.auth.signInWithPassword({ email, password });
+                    const { data, error } = await this.withTimeout(
+                        this.client.auth.signInWithPassword({ email, password }),
+                        20000,
+                        'انتهت مهلة تسجيل الدخول. تحقق من الإنترنت وأعد المحاولة.'
+                    );
                     if (error) throw error;
 
-                    const { data: prof, error: pErr } = await this.client
-                        .from('profiles')
-                        .select('role')
-                        .eq('id', data.user.id)
-                        .single();
+                    const uid = data.user.id;
+                    this.state.user = data.user;
 
-                    if (pErr || prof?.role !== 'admin') {
-                        await this.client.auth.signOut();
-                        this.notify('تم رفض الوصول: هذا الحساب غير مصرح له بالإدارة', 'danger');
+                    this.setAuthLoading(true, 'جاري فحص الصلاحيات...');
+                    const res = await this.withTimeout(
+                        this.verifyAdminRole(uid),
+                        20000,
+                        'انتهت مهلة فحص الصلاحيات. أعد المحاولة.'
+                    );
+
+                    if (!res.ok) {
+                        try { await this.client.auth.signOut(); } catch (e2) { /* ignore */ }
+                        this.showNotAdmin(res, uid, data.user.email || email);
                         return;
                     }
 
+                    this.rememberAdminEmail(email);
+                    passEl.value = '';
+                    this.setAuthMsg('');
                     this.notify('تم التحقق بنجاح! مرحباً بالمدير', 'success');
                     this.closeAdminAuthModal();
                     this.openAdminDashboard();
                 } catch (err) {
-                    this.notify(err.message || 'فشل تسجيل الدخول', 'danger');
+                    this.setAuthMsg(this.authErrorText(err), 'error');
+                } finally {
+                    this._loggingIn = false;
+                    this.setAuthLoading(false);
                 }
+            },
+
+            showNotAdmin(res, uid, email) {
+                const q = (s) => String(s).replace(/'/g, "''");
+                if (res.reason === 'error') {
+                    const detail = (res.error && res.error.message) ? res.error.message : '';
+                    this.setAuthMsg('تم تسجيل الدخول لكن تعذّرت قراءة صلاحيات الحساب من جدول profiles'
+                        + (detail ? ' (' + detail + ')' : '') + '. غالبًا المشكلة في سياسات RLS أو في الجدول.', 'error');
+                    return;
+                }
+                let sql, text;
+                if (res.reason === 'no-profile') {
+                    text = 'كلمة المرور صحيحة، لكن لا يوجد سجل لهذا الحساب في جدول profiles. نفّذ هذا في Supabase ← SQL Editor ثم أعد الدخول:';
+                    sql = "insert into public.profiles (id, email, role)\nvalues ('" + q(uid) + "', '" + q(email) + "', 'admin')\non conflict (id) do update set role = 'admin';";
+                } else {
+                    text = 'كلمة المرور صحيحة، لكن هذا الحساب ليس أدمين. إن كان حسابك فنفّذ هذا في Supabase ← SQL Editor ثم أعد الدخول:';
+                    sql = "update public.profiles\nset role = 'admin'\nwhere id = '" + q(uid) + "';";
+                }
+                const extra = '<div class="auth-sql"><code>' + this.escapeHtml(sql) + '</code>'
+                    + '<button type="button" class="auth-link" style="margin-top:0.4rem" onclick="App.copyText(this.previousElementSibling.textContent)">نسخ الأمر</button></div>';
+                this.setAuthMsg(text, 'error', extra);
             },
 
             async logoutAdmin() {
                 if (this.client) {
-                    await this.client.auth.signOut();
+                    try { await this.client.auth.signOut(); } catch (e) { /* ignore */ }
                 }
+                this.state.user = null;
+                this.state.profile = null;
                 this.closeAdminDashboard();
                 this.notify('تم تسجيل الخروج بنجاح', 'success');
+            },
+
+            // ------------------------------------------------------------
+            // LOGIN CONVENIENCE OPTIONS
+            // ------------------------------------------------------------
+            toggleAuthPassword(btn) {
+                const el = document.getElementById('auth-password');
+                if (!el) return;
+                const show = el.type === 'password';
+                el.type = show ? 'text' : 'password';
+                if (btn) btn.textContent = show ? 'إخفاء' : 'إظهار';
+            },
+
+            prefillAdminEmail() {
+                let saved = '';
+                let remember = true;
+                try {
+                    saved = localStorage.getItem('nt_admin_email') || '';
+                    remember = localStorage.getItem('nt_admin_remember') !== '0';
+                } catch (e) { /* storage unavailable */ }
+                const emailEl = document.getElementById('auth-email');
+                if (emailEl && !emailEl.value && saved) emailEl.value = saved;
+                const cb = document.getElementById('auth-remember');
+                if (cb) cb.checked = remember;
+            },
+
+            rememberAdminEmail(email) {
+                const cb = document.getElementById('auth-remember');
+                try {
+                    if (cb && cb.checked) {
+                        localStorage.setItem('nt_admin_email', email);
+                        localStorage.setItem('nt_admin_remember', '1');
+                    } else {
+                        localStorage.removeItem('nt_admin_email');
+                        localStorage.setItem('nt_admin_remember', '0');
+                    }
+                } catch (e) { /* storage unavailable */ }
+            },
+
+            async sendPasswordReset() {
+                const emailEl = document.getElementById('auth-email');
+                const email = emailEl.value.trim();
+                if (!this.client) {
+                    this.refreshAuthConn();
+                    this.setAuthMsg('قاعدة البيانات غير مُعدّة بعد. اضغط على «ضبط الاتصال» أعلاه أولاً.', 'error');
+                    return;
+                }
+                if (!email) {
+                    this.setAuthMsg('اكتب بريدك الإلكتروني أولاً ثم اضغط «نسيت كلمة المرور؟».', 'info');
+                    emailEl.focus();
+                    return;
+                }
+                const options = {};
+                if (/^https?:$/.test(window.location.protocol)) {
+                    options.redirectTo = window.location.origin + window.location.pathname;
+                }
+                try {
+                    const { error } = await this.withTimeout(
+                        this.client.auth.resetPasswordForEmail(email, options),
+                        20000,
+                        'انتهت المهلة أثناء إرسال رابط الاستعادة. أعد المحاولة.'
+                    );
+                    if (error) throw error;
+                    this.setAuthMsg('تم إرسال رابط استعادة كلمة المرور إلى بريدك (إن كان الحساب موجودًا). افتح الرسالة من نفس هذا المتصفح.', 'success');
+                } catch (err) {
+                    this.setAuthMsg(this.authErrorText(err), 'error');
+                }
+            },
+
+            showRecoveryMode() {
+                this._recoveryMode = true;
+                this.setAuthPanel('recovery');
+                this.setAuthMsg('افتحت رابط استعادة كلمة المرور. اكتب كلمة المرور الجديدة.', 'info');
+                this.refreshAuthConn();
+                document.getElementById('admin-auth-modal').classList.add('active');
+            },
+
+            async saveNewPassword(e) {
+                if (e && e.preventDefault) e.preventDefault();
+                const p1 = document.getElementById('auth-new-password').value;
+                const p2 = document.getElementById('auth-new-password2').value;
+                if (p1.length < 8) {
+                    this.setAuthMsg('كلمة المرور يجب ألا تقل عن 8 أحرف.', 'error');
+                    return;
+                }
+                if (p1 !== p2) {
+                    this.setAuthMsg('كلمتا المرور غير متطابقتين.', 'error');
+                    return;
+                }
+                const btn = document.getElementById('auth-recovery-submit');
+                btn.disabled = true;
+                try {
+                    const { error } = await this.withTimeout(
+                        this.client.auth.updateUser({ password: p1 }),
+                        20000,
+                        'انتهت المهلة أثناء حفظ كلمة المرور. أعد المحاولة.'
+                    );
+                    if (error) throw error;
+
+                    this._recoveryMode = false;
+                    document.getElementById('auth-new-password').value = '';
+                    document.getElementById('auth-new-password2').value = '';
+                    this.setAuthPanel('login');
+
+                    const uid = this.state.user && this.state.user.id;
+                    const res = uid ? await this.verifyAdminRole(uid) : { ok: false };
+                    if (res.ok) {
+                        this.setAuthMsg('');
+                        this.notify('تم تغيير كلمة المرور بنجاح', 'success');
+                        this.closeAdminAuthModal();
+                        this.openAdminDashboard();
+                    } else {
+                        this.setAuthMsg('تم تغيير كلمة المرور بنجاح. سجّل الدخول الآن.', 'success');
+                    }
+                } catch (err) {
+                    this.setAuthMsg(this.authErrorText(err), 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            },
+
+            copyQuickLink() {
+                const link = window.location.origin + window.location.pathname + '#admin';
+                this.copyText(link, 'تم نسخ رابط الدخول السريع');
+            },
+
+            async copyText(text, okMsg) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch (e) {
+                    try {
+                        const ta = document.createElement('textarea');
+                        ta.value = text;
+                        ta.style.position = 'fixed';
+                        ta.style.opacity = '0';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        ta.remove();
+                    } catch (e2) {
+                        window.prompt('انسخ النص التالي:', text);
+                        return;
+                    }
+                }
+                this.notify(okMsg || 'تم النسخ', 'success');
+            },
+
+            // ------------------------------------------------------------
+            // AUTH UI HELPERS
+            // ------------------------------------------------------------
+            setAuthMsg(text, type = 'error', extraHtml = '') {
+                const box = document.getElementById('auth-msg');
+                if (!box) return;
+                if (!text) {
+                    box.className = 'auth-msg';
+                    box.innerHTML = '';
+                    return;
+                }
+                box.className = 'auth-msg show ' + type;
+                box.innerHTML = '<span>' + this.escapeHtml(text) + '</span>' + extraHtml;
+            },
+
+            setAuthLoading(on, label) {
+                const btn = document.getElementById('auth-submit');
+                const lbl = document.getElementById('auth-submit-label');
+                if (!btn || !lbl) return;
+                btn.disabled = !!on;
+                lbl.textContent = on ? (label || 'جاري التحقق...') : 'تسجيل الدخول';
+            },
+
+            setAuthPanel(mode) {
+                const login = document.getElementById('auth-login-panel');
+                const rec = document.getElementById('auth-recovery-panel');
+                if (login) login.style.display = mode === 'recovery' ? 'none' : '';
+                if (rec) rec.style.display = mode === 'recovery' ? '' : 'none';
+            },
+
+            refreshAuthConn() {
+                const el = document.getElementById('auth-conn');
+                if (!el) return;
+                if (this.client) {
+                    el.className = 'auth-conn ok';
+                    el.textContent = 'متصل بقاعدة البيانات';
+                    el.onclick = null;
+                } else {
+                    el.className = 'auth-conn bad';
+                    el.textContent = 'قاعدة البيانات غير مُعدّة — اضغط هنا لضبط الاتصال';
+                    el.onclick = () => { this.closeAdminAuthModal(); this.openConfigModal(); };
+                }
+            },
+
+            authErrorText(err) {
+                const msg = String((err && err.message) || err || '');
+                const code = err && err.code;
+                if (code === 'invalid_credentials' || /invalid login credentials/i.test(msg)) {
+                    return 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                }
+                if (code === 'email_not_confirmed' || /email not confirmed/i.test(msg)) {
+                    return 'لم يتم تأكيد البريد الإلكتروني بعد. افتح رسالة التأكيد في بريدك.';
+                }
+                if ((err && err.status === 429) || code === 'over_request_rate_limit' || code === 'over_email_send_rate_limit' || /rate limit/i.test(msg)) {
+                    return 'محاولات كثيرة. انتظر دقيقة ثم أعد المحاولة.';
+                }
+                if ((err && err.name === 'AuthRetryableFetchError') || /failed to fetch|networkerror|load failed|network request failed/i.test(msg)) {
+                    return 'تعذّر الاتصال بالخادم. تحقق من الإنترنت ومن رابط Supabase في الإعدادات.';
+                }
+                return msg || 'فشل تسجيل الدخول.';
+            },
+
+            withTimeout(promise, ms, message) {
+                let timer;
+                const timeout = new Promise((_, reject) => {
+                    timer = setTimeout(() => reject(new Error(message)), ms);
+                });
+                return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+            },
+
+            // فتح اللوحة من الرابط المباشر (#admin) بعد انتظار استعادة الجلسة
+            openAdminFromLink() {
+                if (!this.config.supabaseUrl || !this.config.supabaseKey) {
+                    this.openAdminAuthModal();
+                    return;
+                }
+                if (this.state.profile && this.state.profile.role === 'admin') {
+                    this.openAdminDashboard();
+                    return;
+                }
+                if (this._authReady) {
+                    this.openAdminAuthModal();
+                    return;
+                }
+                this._pendingAdminOpen = true;
+                clearTimeout(this._pendingTimer);
+                this._pendingTimer = setTimeout(() => this.resolvePendingAdminOpen(), 2500);
+            },
+
+            resolvePendingAdminOpen() {
+                if (!this._pendingAdminOpen) return;
+                this._pendingAdminOpen = false;
+                clearTimeout(this._pendingTimer);
+                this.openAdminAuthModal(); // يفتح اللوحة مباشرة إن كان مديرًا، وإلا نافذة الدخول
             },
 
             // 3. DATA FETCHING (PRODUCTS, CATEGORIES, SETTINGS)
@@ -2184,6 +2586,11 @@
 
             handleRouting() {
                 const hash = window.location.hash;
+                // رابط الدخول السريع: افتح الموقع مع #admin
+                if (hash === '#admin' || hash === '#login') {
+                    this.openAdminFromLink();
+                    return;
+                }
                 if (hash.startsWith('#product-')) {
                     const id = hash.replace('#product-', '');
                     // Wait if products aren't fetched yet
@@ -2405,13 +2812,28 @@
             openAdminAuthModal() {
                 if (this.state.profile?.role === 'admin') {
                     this.openAdminDashboard();
-                } else {
-                    document.getElementById('admin-auth-modal').classList.add('active');
+                    return;
+                }
+                this.setAuthPanel(this._recoveryMode ? 'recovery' : 'login');
+                if (!this._recoveryMode) this.setAuthMsg('');
+                this.refreshAuthConn();
+                this.prefillAdminEmail();
+                document.getElementById('admin-auth-modal').classList.add('active');
+                if (!this._recoveryMode) {
+                    setTimeout(() => {
+                        const emailEl = document.getElementById('auth-email');
+                        const passEl = document.getElementById('auth-password');
+                        if (emailEl && passEl) (emailEl.value ? passEl : emailEl).focus();
+                    }, 200);
                 }
             },
 
             closeAdminAuthModal() {
                 document.getElementById('admin-auth-modal').classList.remove('active');
+                if (this._recoveryMode) {
+                    this._recoveryMode = false;
+                    this.setAuthPanel('login');
+                }
             },
 
             openAdminDashboard() {
