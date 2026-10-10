@@ -918,6 +918,10 @@
 
         .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+        /* نافذة المنتج تُفتح من داخل لوحة الإدارة (z-index: 2000) فيجب أن تعلوها،
+           وإلا تظهر خلف اللوحة ولا يستطيع المدير رؤيتها أو رفع الصور */
+        #product-editor-modal { z-index: 2100; }
+
         /* ---- Admin login helpers ---- */
         .auth-msg { display: none; margin-bottom: 1rem; padding: 0.7rem 0.9rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; line-height: 1.7; border: 1px solid transparent; }
         .auth-msg.show { display: block; }
@@ -1699,8 +1703,8 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label for="prod-edit-category">التصنيف *</label>
-                    <select id="prod-edit-category" class="form-control" required></select>
+                    <label for="prod-edit-category">التصنيف</label>
+                    <select id="prod-edit-category" class="form-control"></select>
                 </div>
                 <div class="form-group">
                     <label for="prod-edit-condition">حالة الجهاز *</label>
@@ -1735,10 +1739,14 @@
 
             <!-- Image Upload Pipeline (Android Gallery / Multi-files) -->
             <div class="form-group">
-                <label>صور المنتج (اختر ملفات من الهاتف أو الجهاز)</label>
-                <input type="file" id="prod-edit-files" class="form-control" multiple accept="image/png, image/jpeg, image/webp" onchange="App.handleImageSelection(event)">
+                <label for="prod-edit-files">صور المنتج (اختر ملفات من الهاتف أو الجهاز)</label>
+                <input type="file" id="prod-edit-files" class="form-control" multiple accept="image/*" onchange="App.handleImageSelection(event)">
                 <div class="upload-preview-grid" id="upload-previews-box"></div>
-                <small style="color: var(--text-muted); font-size: 0.75rem;">الصورة الأولى ستكون تلقائياً الصورة الرئيسية للبطاقة.</small>
+                <small style="color: var(--text-muted); font-size: 0.75rem;">الصورة الأولى ستكون تلقائياً الصورة الرئيسية للبطاقة. حتى 8 صور، وتُصغَّر تلقائيًا قبل الرفع.</small>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.6rem;">
+                    <input type="url" id="prod-edit-url" class="form-control" dir="ltr" placeholder="أو الصق رابط صورة https://..." autocapitalize="none" autocorrect="off" spellcheck="false">
+                    <button type="button" class="btn btn-secondary btn-sm" style="flex-shrink: 0;" onclick="App.addImageByUrl()">إضافة</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -1755,8 +1763,10 @@
                 </label>
             </div>
 
-            <button class="btn btn-primary" style="width: 100%;" onclick="App.saveProductRecord()">
-                حفظ المنتج في قاعدة البيانات
+            <div id="prod-edit-msg" class="auth-msg" role="alert" aria-live="polite"></div>
+
+            <button type="button" id="prod-save-btn" class="btn btn-primary" style="width: 100%;" onclick="App.saveProductRecord()">
+                <span id="prod-save-label">حفظ المنتج في قاعدة البيانات</span>
             </button>
         </div>
     </div>
@@ -2971,13 +2981,17 @@
                 const heading = document.getElementById('product-editor-heading');
                 const catSelect = document.getElementById('prod-edit-category');
 
-                catSelect.innerHTML = this.state.categories.map(c => `
+                // خيار «بدون تصنيف» يمنع فشل الحفظ عندما لا توجد تصنيفات بعد
+                catSelect.innerHTML = '<option value="">— بدون تصنيف —</option>' + this.state.categories.map(c => `
                     <option value="${c.id}">${this.escapeHtml(c.name)}</option>
                 `).join('');
 
                 this.state.editingImages = [];
-                document.getElementById('upload-previews-box').innerHTML = '';
+                this.renderUploadPreviews();
                 document.getElementById('prod-edit-files').value = '';
+                document.getElementById('prod-edit-url').value = '';
+                this.setProductMsg('');
+                this.setProductSaving(false);
 
                 if (editId) {
                     heading.textContent = 'تعديل بيانات المنتج';
@@ -3002,6 +3016,7 @@
                     document.getElementById('prod-edit-id').value = '';
                     document.getElementById('prod-edit-name').value = '';
                     document.getElementById('prod-edit-brand').value = '';
+                    document.getElementById('prod-edit-condition').value = 'new';
                     document.getElementById('prod-edit-price').value = '';
                     document.getElementById('prod-edit-compare-price').value = '';
                     document.getElementById('prod-edit-stock').value = '1';
@@ -3011,6 +3026,10 @@
                     document.getElementById('prod-edit-featured').checked = false;
                 }
 
+                if (!this.state.categories.length) {
+                    this.setProductMsg('لا توجد تصنيفات بعد. يمكنك حفظ المنتج بدون تصنيف، أو أضف تصنيفًا من تبويب «التصنيفات».', 'info');
+                }
+
                 document.getElementById('product-editor-modal').classList.add('active');
             },
 
@@ -3018,24 +3037,89 @@
                 document.getElementById('product-editor-modal').classList.remove('active');
             },
 
+            // رسالة ثابتة داخل نافذة المنتج (بدل التنبيه المؤقت الذي يختفي بعد ثوانٍ)
+            setProductMsg(text, type = 'error') {
+                const box = document.getElementById('prod-edit-msg');
+                if (!box) return;
+                if (!text) {
+                    box.className = 'auth-msg';
+                    box.textContent = '';
+                    return;
+                }
+                box.className = 'auth-msg show ' + type;
+                box.textContent = text;
+                if (type === 'error' && box.scrollIntoView) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            },
+
+            setProductSaving(on, label) {
+                const btn = document.getElementById('prod-save-btn');
+                const lbl = document.getElementById('prod-save-label');
+                if (!btn || !lbl) return;
+                btn.disabled = !!on;
+                lbl.textContent = on ? (label || 'جاري الحفظ...') : 'حفظ المنتج في قاعدة البيانات';
+            },
+
             handleImageSelection(event) {
-                const files = Array.from(event.target.files);
+                const input = event.target;
+                const files = Array.from(input.files || []);
+                input.value = ''; // يسمح باختيار نفس الصورة مرة أخرى لاحقًا
+                this.addImageFiles(files);
+            },
+
+            addImageFiles(files) {
+                const MAX_IMAGES = 8;
+                const MAX_BYTES = 30 * 1024 * 1024;
+                const skipped = [];
                 files.forEach(f => {
+                    const looksLikeImage = /^image\//i.test(f.type) || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name);
+                    if (!looksLikeImage) { skipped.push((f.name || 'ملف') + ' (ليس صورة)'); return; }
+                    if (f.size > MAX_BYTES) { skipped.push((f.name || 'صورة') + ' (أكبر من 30MB)'); return; }
+                    if (this.state.editingImages.length >= MAX_IMAGES) {
+                        if (!skipped.includes('الحد الأقصى ' + MAX_IMAGES + ' صور')) skipped.push('الحد الأقصى ' + MAX_IMAGES + ' صور');
+                        return;
+                    }
+                    const dup = this.state.editingImages.some(x => x instanceof File && x.name === f.name && x.size === f.size && x.lastModified === f.lastModified);
+                    if (dup) return;
                     this.state.editingImages.push(f);
                 });
                 this.renderUploadPreviews();
+                this.setProductMsg(skipped.length ? 'تم تجاهل: ' + skipped.join('، ') : '', 'info');
+            },
+
+            // خيار بديل: إضافة صورة برابط مباشر (إذا تعذّر اختيار ملف من الجهاز)
+            addImageByUrl() {
+                const el = document.getElementById('prod-edit-url');
+                const url = (el.value || '').trim();
+                if (!/^https?:\/\/\S+$/i.test(url)) {
+                    this.setProductMsg('اكتب رابط صورة صحيح يبدأ بـ https://', 'error');
+                    return;
+                }
+                if (this.state.editingImages.length >= 8) {
+                    this.setProductMsg('الحد الأقصى 8 صور.', 'info');
+                    return;
+                }
+                this.state.editingImages.push(url);
+                el.value = '';
+                this.renderUploadPreviews();
+                this.setProductMsg('');
             },
 
             renderUploadPreviews() {
                 const box = document.getElementById('upload-previews-box');
+                (this._previewUrls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { /* ignore */ } });
+                this._previewUrls = [];
                 box.innerHTML = '';
                 this.state.editingImages.forEach((img, idx) => {
                     const item = document.createElement('div');
                     item.className = 'upload-preview-item';
-                    const src = img instanceof File ? URL.createObjectURL(img) : img;
+                    let src = img;
+                    if (img instanceof File) {
+                        src = URL.createObjectURL(img);
+                        this._previewUrls.push(src);
+                    }
                     item.innerHTML = `
-                        <img src="${src}" alt="preview">
-                        <button class="upload-preview-del" onclick="App.removeEditingImage(${idx})">&times;</button>
+                        <img src="${this.escapeHtml(src)}" alt="preview">
+                        <button type="button" class="upload-preview-del" onclick="App.removeEditingImage(${idx})">&times;</button>
                     `;
                     box.appendChild(item);
                 });
@@ -3046,11 +3130,74 @@
                 this.renderUploadPreviews();
             },
 
+            // تصغير صور الهاتف قبل الرفع (صور الكاميرا 3–10MB تصبح غالبًا أقل من 500KB)
+            async prepareImageForUpload(file) {
+                const origExt = (((file.name || '').split('.').pop() || '') + '').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+                const original = { body: file, ext: origExt, contentType: file.type || 'image/jpeg' };
+                if (/image\/gif/i.test(file.type)) return original; // لا نكسر الصور المتحركة
+                const isHeic = /hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name || '');
+                try {
+                    const MAX_SIDE = 1600;
+                    let source, w, h, bitmap = null;
+                    if (window.createImageBitmap) {
+                        try { bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { bitmap = null; }
+                    }
+                    if (bitmap) {
+                        source = bitmap; w = bitmap.width; h = bitmap.height;
+                    } else {
+                        const url = URL.createObjectURL(file);
+                        try {
+                            const img = await new Promise((resolve, reject) => {
+                                const i = new Image();
+                                i.onload = () => resolve(i);
+                                i.onerror = () => reject(new Error('decode failed'));
+                                i.src = url;
+                            });
+                            source = img; w = img.naturalWidth; h = img.naturalHeight;
+                        } finally { URL.revokeObjectURL(url); }
+                    }
+                    const scale = Math.min(1, MAX_SIDE / Math.max(w, h));
+                    const cw = Math.max(1, Math.round(w * scale));
+                    const ch = Math.max(1, Math.round(h * scale));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = cw; canvas.height = ch;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, cw, ch);
+                    ctx.drawImage(source, 0, 0, cw, ch);
+                    if (bitmap && bitmap.close) bitmap.close();
+                    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.82));
+                    if (blob && (scale < 1 || blob.size < file.size)) {
+                        return { body: blob, ext: 'jpg', contentType: 'image/jpeg' };
+                    }
+                    return original;
+                } catch (e) {
+                    if (isHeic) throw new Error('صيغة الصورة HEIC غير مدعومة في المتصفح. غيّر صيغة الكاميرا إلى JPEG أو اختر صورة أخرى.');
+                    return original; // تعذّر التصغير، نرفع الأصل كما هو
+                }
+            },
+
+            productErrorText(err) {
+                const msg = String((err && err.message) || err || '');
+                if (/row-level security|violates row-level|not authorized|unauthorized/i.test(msg)) {
+                    return 'لا تملك صلاحية الرفع أو الحفظ. سجّل الخروج ثم الدخول بحساب الأدمين من جديد. (' + msg + ')';
+                }
+                if (/jwt expired|invalid jwt/i.test(msg)) return 'انتهت جلسة الدخول. سجّل الخروج ثم الدخول من جديد.';
+                if (/invalid input syntax for type uuid/i.test(msg)) return 'التصنيف المختار غير صالح. اختر «بدون تصنيف» أو أنشئ تصنيفًا أولاً.';
+                if (/payload too large|entity too large|\b413\b/i.test(msg)) return 'حجم الصورة كبير جدًا.';
+                if (/failed to fetch|networkerror|load failed|network request failed/i.test(msg)) {
+                    return 'تعذّر الاتصال بالخادم أثناء الرفع. تحقق من الإنترنت وأعد المحاولة.';
+                }
+                return msg || 'حدث خطأ غير متوقع أثناء الحفظ.';
+            },
+
             async saveProductRecord() {
+                if (this._savingProduct) return; // منع الضغط المتكرر
+
                 const id = document.getElementById('prod-edit-id').value;
                 const name = document.getElementById('prod-edit-name').value.trim();
                 const brand = document.getElementById('prod-edit-brand').value.trim();
-                const category_id = document.getElementById('prod-edit-category').value;
+                const category_id = document.getElementById('prod-edit-category').value || null; // '' غير صالح كـ uuid
                 const condition = document.getElementById('prod-edit-condition').value;
                 const price = parseFloat(document.getElementById('prod-edit-price').value);
                 const compare_at_price = parseFloat(document.getElementById('prod-edit-compare-price').value) || null;
@@ -3060,81 +3207,104 @@
                 const is_published = document.getElementById('prod-edit-published').checked;
                 const is_featured = document.getElementById('prod-edit-featured').checked;
 
+                if (!this.client) {
+                    this.setProductMsg('قاعدة البيانات غير مُعدّة. اضبط الاتصال من أيقونة الإعدادات.', 'error');
+                    return;
+                }
                 if (!name || !brand || isNaN(price) || isNaN(stock_quantity)) {
-                    this.notify('يرجى إكمال الحقول الأساسية بشكل صحيح', 'danger');
+                    this.setProductMsg('أكمل الحقول الأساسية: الاسم، الماركة، السعر، والكمية.', 'error');
                     return;
                 }
-
                 if (this.state.editingImages.length === 0) {
-                    this.notify('يرجى تحديد صورة واحدة على الأقل للمنتج', 'danger');
+                    this.setProductMsg('حدّد صورة واحدة على الأقل للمنتج (من الجهاز أو برابط).', 'error');
                     return;
                 }
 
-                this.notify('جاري حفظ المنتج ورفع الصور...', 'warning');
+                this._savingProduct = true;
+                this.setProductMsg('');
+                this.setProductSaving(true, 'جاري التجهيز...');
+                const bucket = this.config.storageBucket;
+                const uploadedPaths = [];
 
-                // 1. Upload files to Supabase Storage Bucket
-                const finalUrls = [];
-                for (const imgItem of this.state.editingImages) {
-                    if (imgItem instanceof File) {
-                        try {
-                            const fileExt = imgItem.name.split('.').pop();
-                            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-                            const filePath = `products/${fileName}`;
-
-                            const { error: upErr } = await this.client.storage
-                                .from(this.config.storageBucket)
-                                .upload(filePath, imgItem);
-
-                            if (upErr) throw upErr;
-
-                            const { data: pubData } = this.client.storage
-                                .from(this.config.storageBucket)
-                                .getPublicUrl(filePath);
-
-                            finalUrls.push(pubData.publicUrl);
-                        } catch (err) {
-                            this.notify('فشل رفع أحد ملفات الصور: ' + err.message, 'danger');
-                            return;
-                        }
-                    } else {
-                        // Already a hosted URL
-                        finalUrls.push(imgItem);
+                try {
+                    // الجلسة يجب أن تكون صالحة، وإلا سيرفض التخزين الرفع بسبب سياسات الأمان
+                    const { data: sessData } = await this.withTimeout(
+                        this.client.auth.getSession(), 15000, 'تعذّر التحقق من جلسة الدخول.'
+                    );
+                    if (!sessData || !sessData.session) {
+                        throw new Error('انتهت جلسة الدخول. سجّل الخروج ثم الدخول من جديد.');
                     }
-                }
 
-                const payload = {
-                    name,
-                    brand,
-                    category_id,
-                    condition,
-                    price,
-                    compare_at_price,
-                    stock_quantity,
-                    warranty_info,
-                    description,
-                    is_published,
-                    is_featured,
-                    main_image: finalUrls[0],
-                    gallery_images: finalUrls.slice(1),
-                    updated_at: new Date()
-                };
+                    // 1. رفع الصور إلى Supabase Storage
+                    const finalUrls = [];
+                    const total = this.state.editingImages.filter(x => x instanceof File).length;
+                    let n = 0;
+                    for (const imgItem of this.state.editingImages) {
+                        if (!(imgItem instanceof File)) {
+                            finalUrls.push(imgItem); // رابط مستضاف مسبقًا
+                            continue;
+                        }
+                        n++;
+                        this.setProductSaving(true, `جاري تجهيز الصورة ${n} من ${total}...`);
+                        const prepared = await this.prepareImageForUpload(imgItem);
 
-                let resError = null;
-                if (id) {
-                    const { error } = await this.client.from('products').update(payload).eq('id', id);
-                    resError = error;
-                } else {
-                    const { error } = await this.client.from('products').insert([payload]);
-                    resError = error;
-                }
+                        this.setProductSaving(true, `جاري رفع الصورة ${n} من ${total}...`);
+                        const filePath = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${prepared.ext}`; // المخزن نفسه اسمه products
+                        const { error: upErr } = await this.withTimeout(
+                            this.client.storage.from(bucket).upload(filePath, prepared.body, {
+                                contentType: prepared.contentType,
+                                cacheControl: '31536000',
+                                upsert: false
+                            }),
+                            90000,
+                            `انتهت مهلة رفع الصورة ${n}. تحقق من الإنترنت وأعد المحاولة.`
+                        );
+                        if (upErr) throw upErr;
+                        uploadedPaths.push(filePath);
 
-                if (resError) {
-                    this.notify('فشل حفظ المنتج في قاعدة البيانات: ' + resError.message, 'danger');
-                } else {
+                        const { data: pubData } = this.client.storage.from(bucket).getPublicUrl(filePath);
+                        finalUrls.push(pubData.publicUrl);
+                    }
+
+                    // 2. حفظ بيانات المنتج
+                    this.setProductSaving(true, 'جاري حفظ بيانات المنتج...');
+                    const payload = {
+                        name,
+                        brand,
+                        category_id,
+                        condition,
+                        price,
+                        compare_at_price,
+                        stock_quantity,
+                        warranty_info,
+                        description,
+                        is_published,
+                        is_featured,
+                        main_image: finalUrls[0],
+                        gallery_images: finalUrls.slice(1),
+                        updated_at: new Date()
+                    };
+
+                    const request = id
+                        ? this.client.from('products').update(payload).eq('id', id)
+                        : this.client.from('products').insert([payload]);
+                    const { error: dbErr } = await this.withTimeout(request, 30000, 'انتهت مهلة حفظ المنتج. أعد المحاولة.');
+                    if (dbErr) throw dbErr;
+
                     this.notify('تم حفظ المنتج بنجاح!', 'success');
                     this.closeProductEditorModal();
                     this.loadAdminProducts();
                     this.loadAdminMetrics();
+                } catch (err) {
+                    console.error('saveProductRecord failed:', err);
+                    // تنظيف الصور التي رُفعت في هذه المحاولة حتى لا تبقى ملفات يتيمة في التخزين
+                    if (uploadedPaths.length) {
+                        try { await this.client.storage.from(bucket).remove(uploadedPaths); } catch (e2) { /* ignore */ }
+                    }
+                    this.setProductMsg(this.productErrorText(err), 'error');
+                } finally {
+                    this._savingProduct = false;
+                    this.setProductSaving(false);
                 }
             },
 
