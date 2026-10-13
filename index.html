@@ -875,7 +875,6 @@ ul, ol { padding: 0; list-style: none; }
         <button type="button" data-theme-set="light" aria-pressed="false" onclick="App.setTheme('light')">فاتح</button>
         <button type="button" data-theme-set="dark" aria-pressed="false" onclick="App.setTheme('dark')">داكن</button>
       </div>
-      <span><button type="button" onclick="App.openAdminAuthModal()">دخول الإدارة</button> &nbsp; <button type="button" onclick="App.openConfigModal()">إعداد الاتصال</button></span>
     </div>
   </div>
 </footer>
@@ -2022,7 +2021,7 @@ Object.assign(App, {
     if (this.state.loadError) {
       grid.innerHTML = '';
       sub.textContent = '';
-      empty.innerHTML = '<div class="state"><div class="ico">' + ICON('alert', 'i-lg') + '</div><h3>تعذّر تحميل المنتجات</h3><p>قد يكون الإنترنت ضعيفًا. تحقق منه ثم أعد المحاولة.</p><div class="actions"><button type="button" class="btn btn-primary" onclick="App.retryLoad()">أعد المحاولة</button><button type="button" class="btn btn-ghost" onclick="App.openConfigModal()">إعداد الاتصال</button></div></div>';
+      empty.innerHTML = '<div class="state"><div class="ico">' + ICON('alert', 'i-lg') + '</div><h3>تعذّر تحميل المنتجات</h3><p>قد يكون الإنترنت ضعيفًا. تحقق منه ثم أعد المحاولة.</p><div class="actions"><button type="button" class="btn btn-primary" onclick="App.retryLoad()">أعد المحاولة</button></div></div>';
       return;
     }
     if (!this.state.products.length) {
