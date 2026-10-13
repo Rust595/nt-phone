@@ -3012,7 +3012,7 @@ Object.assign(App, {
       const payload = {
         name, brand, model: val('model').trim(), category_id: val('category') || null, condition: val('condition'),
         price, compare_at_price: cmp > 0 ? cmp : null, stock_quantity: stock, warranty_info: val('warranty').trim(), description: val('description').trim(),
-        specifications: Object.keys(specs).length ? specs : null,
+        specifications: specs, // العمود NOT NULL: نرسل {} عند عدم وجود مواصفات
         is_published: this.getSwitch('prod-edit-published'), is_featured: this.getSwitch('prod-edit-featured'), is_new_arrival: this.getSwitch('prod-edit-new'),
         main_image: urls[0], gallery_images: urls.slice(1), updated_at: new Date().toISOString()
       };
