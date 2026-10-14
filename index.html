@@ -1188,6 +1188,7 @@ const App = {
     this.renderBudget();
     this.updateCartBadge();
     this.bindGlobal();
+    this.setupAdminEntry();
     const h = location.hash;
     this.checkIntroPreference(/^#(admin|login|setup)/.test(h));
     this.renderSkeleton();
@@ -1783,6 +1784,27 @@ Object.assign(App, {
   closeAdminAuthModal() {
     Ov.close('admin-auth-modal');
     if (this._recoveryMode) { this._recoveryMode = false; this.setAuthPanel('login'); }
+  },
+
+  /* مدخل الإدارة المخفي: ينظّف #admin من الرابط عند الإغلاق (حتى يعمل الرابط المحفوظ كل مرة)،
+     ويفتح أيضًا بالضغط 5 مرات متتالية على حقوق النشر أسفل الصفحة */
+  setupAdminEntry() {
+    const clearHash = () => {
+      if (/^#(admin|login)$/.test(location.hash)) { try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) { /* ignore */ } }
+    };
+    ['admin-panel', 'admin-auth-modal'].forEach((id) => {
+      const prev = Ov.hooks[id];
+      Ov.hooks[id] = () => { if (prev) prev(); setTimeout(() => { if (!Ov.isOpen('admin-panel') && !Ov.isOpen('admin-auth-modal')) clearHash(); }, 120); };
+    });
+    let taps = 0, t0 = 0;
+    const el = $('footer-copy') || $('year');
+    if (el) el.parentNode.addEventListener('click', () => {
+      const now = Date.now();
+      taps = now - t0 < 900 ? taps + 1 : 1; t0 = now;
+      if (taps >= 5) { taps = 0; this.openAdminFromLink(); }
+    });
+    // العودة من الذاكرة المؤقتة للمتصفح (bfcache) أو إعادة فتح الرابط نفسه
+    window.addEventListener('pageshow', (e) => { if (e.persisted) this.handleRouting(); });
   }
 });
 
